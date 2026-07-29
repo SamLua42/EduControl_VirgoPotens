@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 public class Personal {
 	
 	//ATRIBUTOS==============================================================================================================================
-	private int IDPersonal;
+	private int idPersonal;
 	private String nombre;
 	private String apellido;
 	private String dni;
@@ -14,7 +14,7 @@ public class Personal {
 	private String tipoPersonal;
 	private Time horaEntradaEsperada;
 	private String usuario;
-	private String contraseña;
+	private String contrasena;
 	private String rol;
 	private boolean estado;
 	private Timestamp fechaRegistro;
@@ -25,10 +25,10 @@ public class Personal {
 	{
 	}
 	
-	public Personal(int IDPersonal, String nombre, String apellido, String dni, String cargo, String tipoPersonal, Time horaEntradaEsperada,
-			        String usuario, String contraseña, String rol, boolean estado, Timestamp fechaRegistro )
+	public Personal(int idPersonal, String nombre, String apellido, String dni, String cargo, String tipoPersonal, Time horaEntradaEsperada,
+			        String usuario, String contrasena, String rol, boolean estado, Timestamp fechaRegistro )
 	{
-		this.IDPersonal = IDPersonal;
+		this.idPersonal = idPersonal;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.dni = dni;
@@ -36,7 +36,7 @@ public class Personal {
 		this.tipoPersonal = tipoPersonal;
 		this.horaEntradaEsperada = horaEntradaEsperada;
 		this.usuario = usuario;
-		this.contraseña = contraseña;
+		this.contrasena = contrasena;
 		this.rol = rol;
 		this.estado = estado;
 		this.fechaRegistro = fechaRegistro;
@@ -44,8 +44,8 @@ public class Personal {
 
 	
 	//GETTERS Y SETTERS======================================================================================================================
-	public int getIDPersonal() {return IDPersonal;}
-	public void setIDPersonal(int iDPersonal) {IDPersonal = iDPersonal;}
+	public int getIdPersonal() {return idPersonal;}
+	public void setIdPersonal(int idPersonal) {this.idPersonal = idPersonal;}
 
 	public String getNombre() {return nombre;}
 	public void setNombre(String nombre) {this.nombre = nombre;}
@@ -68,8 +68,8 @@ public class Personal {
 	public String getUsuario() {return usuario;}
 	public void setUsuario(String usuario) {this.usuario = usuario;}
 
-	public String getContraseña() {return contraseña;}
-	public void setContraseña(String contraseña) {this.contraseña = contraseña;}
+	public String getContrasena() {return contrasena;}
+	public void setContrasena(String contrasena) {this.contrasena = contrasena;}
 
 	public String getRol() {return rol;}
 	public void setRol(String rol) {this.rol = rol;}
