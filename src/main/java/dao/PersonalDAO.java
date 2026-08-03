@@ -74,7 +74,43 @@ public class PersonalDAO implements IPersonalDAO {
 	}
 
 
-
+	
+	@Override
+	public Personal buscarPorUsuario(String usuario)
+	{
+		Personal p = null;
+		String sql = "SELECT * FROM Personal WHERE  usuario=?";
+		try(Connection con = ConexionBD.miConexion();
+			 PreparedStatement ps = con.prepareStatement(sql))
+		{
+			ps.setString(1,usuario);
+			ResultSet rs =ps.executeQuery();
+			
+			if(rs.next())
+			{
+				p = new Personal();
+				p.setIdPersonal(rs.getInt("IDPersonal"));
+				p.setNombre(rs.getString("nombre"));
+				p.setApellido(rs.getString("apellido"));
+				p.setDni(rs.getString("dni"));
+				p.setCargo(rs.getString("cargo"));
+				p.setTipoPersonal(rs.getString("tipoPersonal"));
+				p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
+				p.setUsuario(rs.getString("usuario"));
+				p.setContrasena(rs.getString("contrasena"));
+				p.setRol(rs.getString("rol"));
+				p.setEstado(rs.getBoolean("estado"));
+				p.setFechaRegistro(rs.getTimestamp("fechaRegistro"));
+			}
+		}
+		
+		catch (SQLException e) {e.printStackTrace();}
+		
+		return p;
+	}
+	
+	
+	
 	@Override
 	public List<Personal> listar()
 	{
