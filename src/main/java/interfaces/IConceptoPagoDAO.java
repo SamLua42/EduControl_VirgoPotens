@@ -5,10 +5,10 @@ import entidad.ConceptoPago;
 
 public interface IConceptoPagoDAO {
 	
-	void insertar(ConceptoPago c);
+	int insertar(ConceptoPago c);
 	ConceptoPago buscarPorId(int idConcepto);
 	List<ConceptoPago> listar();
-	void actualizar(ConceptoPago c);
-	void eliminar(int idConcepto);
+	int actualizar(ConceptoPago c);
+	int eliminar(int idConcepto);
 
 }

@@ -16,8 +16,9 @@ import util.ConexionBD;
 public class ConceptoPagoDAO implements IConceptoPagoDAO {
 
 	@Override
-	public void insertar(ConceptoPago c)
+	public int insertar(ConceptoPago c)
 	{
+		int resultado = 0;
 		String sql = "INSERT INTO ConceptoPago(tipoPersonal, tarifaDiaria, descuentoTardanza, descuentoFalta) VALUES(?,?,?,?)";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -27,10 +28,12 @@ public class ConceptoPagoDAO implements IConceptoPagoDAO {
 			ps.setBigDecimal(2, c.getTarifaDiaria());
 			ps.setBigDecimal(3, c.getDescuentoTardanza());
 			ps.setBigDecimal(4, c.getDescuentoFalta());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) { e.printStackTrace(); }
+		
+		return resultado;
 	}
 
 	
@@ -95,8 +98,9 @@ public class ConceptoPagoDAO implements IConceptoPagoDAO {
 	
 	
 	@Override
-	public void actualizar(ConceptoPago c) 
+	public int actualizar(ConceptoPago c) 
 	{
+		int resultado = 0;
 		String sql = "UPDATE ConceptoPago SET tipoPersonal=?, tarifaDiaria=?, descuentoTardanza=?, descuentoFalta=? WHERE IDConcepto=?";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -107,27 +111,32 @@ public class ConceptoPagoDAO implements IConceptoPagoDAO {
 			ps.setBigDecimal(3, c.getDescuentoTardanza());
 			ps.setBigDecimal(4, c.getDescuentoFalta());
 			ps.setInt(5, c.getIdConcepto());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 	
 	
 	@Override
-	public void eliminar(int idConcepto)
+	public int eliminar(int idConcepto)
 	{
+		int resultado = 0;
 		String sql = "DELETE FROM ConceptoPago WHERE IDConcepto=?";
 		
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
 			ps.setInt(1, idConcepto);
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 }
