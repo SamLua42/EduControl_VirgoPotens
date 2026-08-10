@@ -15,8 +15,9 @@ import util.ConexionBD;
 public class AsistenciaDAO implements IAsistenciaDAO{
 
 	@Override
-	public void insertar(Asistencia a)
+	public int insertar(Asistencia a)
 	{	
+		int resultado = 0;
 		String sql = "INSERT INTO Asistencia(IDPersonal, fecha, horaMarcada, clasificacion) VALUES(?,?,?,?)";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -26,10 +27,12 @@ public class AsistenciaDAO implements IAsistenciaDAO{
 			ps.setDate(2, a.getFecha());
 			ps.setTime(3, a.getHoraMarcada());
 			ps.setString(4, a.getClasificacion());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) { e.printStackTrace(); }
+		
+		return resultado;
 	}
 
 	
@@ -94,8 +97,9 @@ public class AsistenciaDAO implements IAsistenciaDAO{
 	
 	
 	@Override
-	public void actualizar(Asistencia a)
+	public int actualizar(Asistencia a)
 	{
+		int resultado = 0;
 		String sql = "UPDATE Asistencia SET IDPersonal=?, fecha=?, horaMarcada=?, clasificacion=? WHERE IDAsistencia=?";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -107,27 +111,32 @@ public class AsistenciaDAO implements IAsistenciaDAO{
 			ps.setTime(3, a.getHoraMarcada());
 			ps.setString(4, a.getClasificacion());
 			ps.setInt(5, a.getIdAsistencia());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
-		catch (SQLException e) { e.printStackTrace(); }
+		catch (SQLException e) { e.printStackTrace();}
+		
+		return resultado;
 	}
 
 	
 	
 	@Override
-	public void eliminar(int idAsistencia)
+	public int eliminar(int idAsistencia)
 	{
+		int resultado = 0;
 		String sql = "DELETE FROM Asistencia WHERE IDAsistencia=?";
 		
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
 			ps.setInt(1, idAsistencia);
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
-		catch (SQLException e) { e.printStackTrace(); }
+		catch (SQLException e) { e.printStackTrace();}
+		
+		return resultado;
 	}
 	
 }

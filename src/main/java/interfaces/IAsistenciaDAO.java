@@ -5,9 +5,9 @@ import entidad.Asistencia;
 
 public interface IAsistenciaDAO {
 
-	void insertar(Asistencia a);
+	int insertar(Asistencia a);
 	Asistencia buscarPorId(int idAsistencia);
 	List<Asistencia> listar();
-	void actualizar(Asistencia a);
-	void eliminar(int idAsistencia);
+	int actualizar(Asistencia a);
+	int eliminar(int idAsistencia);
 }
