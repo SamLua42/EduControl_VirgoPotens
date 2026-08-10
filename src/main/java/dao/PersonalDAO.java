@@ -16,8 +16,9 @@ import util.ConexionBD;
 public class PersonalDAO implements IPersonalDAO {
 
 	@Override
-	public void insertar(Personal p)
+	public int insertar(Personal p)
 	{
+		int resultado = 0;
 		String sql = "INSERT INTO Personal(nombre, apellido, dni, cargo, tipoPersonal, horaEntradaEsperada, usuario, contrasena, rol) VALUES(?,?,?,?,?,?,?,?,?)";
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
@@ -31,10 +32,12 @@ public class PersonalDAO implements IPersonalDAO {
 			 ps.setString(7, p.getUsuario());
 			 ps.setString(8, p.getContrasena());
 			 ps.setString(9, p.getRol());
-			 ps.executeUpdate();
+			 resultado = ps.executeUpdate();
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 
@@ -148,8 +151,9 @@ public class PersonalDAO implements IPersonalDAO {
 
 
 	@Override
-	public void actualizar(Personal p)
+	public int actualizar(Personal p)
 	{
+		int resultado = 0;
 		String sql = "UPDATE Personal SET nombre=?, apellido=?, dni=?, cargo=?, tipoPersonal=?, horaEntradaEsperada=?, usuario=?, contrasena=?, rol=? WHERE IDPersonal=?";
 
 		try (Connection con  = ConexionBD.miConexion();
@@ -165,27 +169,32 @@ public class PersonalDAO implements IPersonalDAO {
 			ps.setString(8, p.getContrasena());
 			ps.setString(9, p.getRol());
 			ps.setInt(10, p.getIdPersonal());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 
 
 	@Override
-	public void eliminar(int idPersonal)
+	public int eliminar(int idPersonal)
 	{
+		int resultado = 0;
 		String sql = "DELETE FROM Personal WHERE IDPersonal=?";
 
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
 			ps.setInt(1, idPersonal);
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 }
