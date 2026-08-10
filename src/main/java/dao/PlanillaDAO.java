@@ -15,8 +15,9 @@ import util.ConexionBD;
 public class PlanillaDAO implements IPlanillaDAO {
 
 	@Override
-	public void insertar(Planilla pl)
+	public int insertar(Planilla pl)
 	{
+		int resultado = 0;
 		String sql = "INSERT INTO Planilla(mes, anio) VALUES(?,?)";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -24,10 +25,12 @@ public class PlanillaDAO implements IPlanillaDAO {
 		{
 			ps.setInt(1, pl.getMes());
 			ps.setInt(2, pl.getAnio());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 	
@@ -88,8 +91,9 @@ public class PlanillaDAO implements IPlanillaDAO {
 	
 	
 	@Override
-	public void actualizar(Planilla pl)
+	public int actualizar(Planilla pl)
 	{		
+		int resultado = 0;
 		String sql = "UPDATE Planilla SET mes=?, anio=? WHERE IDPlanilla=?";
 		
 		try (Connection con = ConexionBD.miConexion();
@@ -98,27 +102,32 @@ public class PlanillaDAO implements IPlanillaDAO {
 			ps.setInt(1, pl.getMes());
 			ps.setInt(2, pl.getAnio());
 			ps.setInt(3, pl.getIdPlanilla());
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 	
 	
 	@Override
-	public void eliminar(int idPlanilla)
+	public int eliminar(int idPlanilla)
 	{
+		int resultado = 0;
 		String sql = "DELETE FROM Planilla WHERE IDPlanilla=?";
 		
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
 			ps.setInt(1, idPlanilla);
-			ps.executeUpdate();
+			resultado = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {e.printStackTrace();}
+		
+		return resultado;
 	}
 
 }
