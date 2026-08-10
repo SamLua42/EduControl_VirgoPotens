@@ -49,10 +49,12 @@ public class PlanillaDAO implements IPlanillaDAO {
 			
 			if(rs.next())
 			{
-				pl = new Planilla();
-				pl.setIdPlanilla(rs.getInt("IDPlanilla"));
-				pl.setMes(rs.getInt("mes"));
-				pl.setAnio(rs.getInt("anio"));
+			    pl = new Planilla();
+			    pl.setIdPlanilla(rs.getInt("IDPlanilla"));
+			    pl.setMes(rs.getInt("mes"));
+			    pl.setAnio(rs.getInt("anio"));
+			    pl.setEstado(rs.getString("estado"));
+			    pl.setFechaProcesado(rs.getTimestamp("fechaProcesado"));
 			}
 		}
 		
@@ -75,11 +77,13 @@ public class PlanillaDAO implements IPlanillaDAO {
 		{
 			while(rs.next())
 			{
-				Planilla pl = new Planilla();
-				pl.setIdPlanilla(rs.getInt("IDPlanilla"));
-				pl.setMes(rs.getInt("mes"));
-				pl.setAnio(rs.getInt("anio"));
-				lista.add(pl);
+			    Planilla pl = new Planilla();
+			    pl.setIdPlanilla(rs.getInt("IDPlanilla"));
+			    pl.setMes(rs.getInt("mes"));
+			    pl.setAnio(rs.getInt("anio"));
+			    pl.setEstado(rs.getString("estado"));
+			    pl.setFechaProcesado(rs.getTimestamp("fechaProcesado"));
+			    lista.add(pl);
 			}
 		}
 		
@@ -92,22 +96,24 @@ public class PlanillaDAO implements IPlanillaDAO {
 	
 	@Override
 	public int actualizar(Planilla pl)
-	{		
-		int resultado = 0;
-		String sql = "UPDATE Planilla SET mes=?, anio=? WHERE IDPlanilla=?";
-		
-		try (Connection con = ConexionBD.miConexion();
-			 PreparedStatement ps = con.prepareStatement(sql))
-		{	
-			ps.setInt(1, pl.getMes());
-			ps.setInt(2, pl.getAnio());
-			ps.setInt(3, pl.getIdPlanilla());
-			resultado = ps.executeUpdate();
-		}
-		
-		catch (SQLException e) {e.printStackTrace();}
-		
-		return resultado;
+	{
+	    int resultado = 0;
+	    String sql = "UPDATE Planilla SET mes=?, anio=?, estado=?, fechaProcesado=? WHERE IDPlanilla=?";
+
+	    try (Connection con = ConexionBD.miConexion();
+	         PreparedStatement ps = con.prepareStatement(sql))
+	    {
+	        ps.setInt(1, pl.getMes());
+	        ps.setInt(2, pl.getAnio());
+	        ps.setString(3, pl.getEstado());
+	        ps.setTimestamp(4, pl.getFechaProcesado());
+	        ps.setInt(5, pl.getIdPlanilla());
+	        resultado = ps.executeUpdate();
+	    }
+
+	    catch (SQLException e) {e.printStackTrace();}
+
+	    return resultado;
 	}
 
 	

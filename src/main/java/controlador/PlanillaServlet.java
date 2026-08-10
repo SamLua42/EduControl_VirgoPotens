@@ -249,6 +249,7 @@ public class PlanillaServlet extends HttpServlet
 
 		Planilla pl = planillaDAO.buscarPorId(idPlanilla);
 		pl.setEstado("Procesada");
+		pl.setFechaProcesado(new java.sql.Timestamp(System.currentTimeMillis()));
 
 		int resultado = planillaDAO.actualizar(pl);
 
