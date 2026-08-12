@@ -16,9 +16,10 @@ public class ConexionBD {
 		Connection con = null;
 		
 		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = DriverManager.getConnection(URL,USER,PASSWORD);
 			}
-		catch (SQLException e) {
+		catch (Exception e) {
 			System.out.println("Error al conectar a la BD_EduControl" + e.getMessage());
 			e.printStackTrace();
 			}
