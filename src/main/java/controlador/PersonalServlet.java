@@ -1,13 +1,16 @@
 package controlador;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 import dao.PersonalDAO;
 import entidad.Personal;
@@ -15,6 +18,11 @@ import entidad.Personal;
 
 
 @WebServlet("/PersonalServlet")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024,      // 1MB
+    maxFileSize = 1024 * 1024 * 5,        // 5MB por foto
+    maxRequestSize = 1024 * 1024 * 10     // 10MB por request
+)
 
 
 public class PersonalServlet extends HttpServlet
@@ -29,14 +37,16 @@ public class PersonalServlet extends HttpServlet
 	private static final String ELIMINAR = "eliminar";
 	private static final String CAMBIAR_CLAVE = "cambiarClave";
 
+	private static final String CARPETA_FOTOS = "/img/perfiles/";
+
 	private PersonalDAO personalDAO;
 
-	
+
 
 	public PersonalServlet() {personalDAO = new PersonalDAO();}
-	
 
-	
+
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		procesar(request, response);
@@ -47,8 +57,8 @@ public class PersonalServlet extends HttpServlet
 		procesar(request, response);
 	}
 
-	
-	
+
+
 	private void procesar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		request.setCharacterEncoding("UTF-8");
@@ -114,7 +124,7 @@ public class PersonalServlet extends HttpServlet
 			    listar(request, response);
 			}
 		}
-		
+
 		catch (Exception e)
 		{
 			request.setAttribute("error", "Ocurrió un error: " + e.getMessage());
@@ -122,13 +132,13 @@ public class PersonalServlet extends HttpServlet
 		    {
 		        listar(request, response);
 		    }
-		    
+
 		    catch (Exception ex) {ex.printStackTrace();}
 		}
 	}
 
-	
-	
+
+
 	private void cargarDatos(HttpServletRequest request)
 	{
 	    request.setAttribute("listaPersonal", personalDAO.listar());
@@ -138,16 +148,16 @@ public class PersonalServlet extends HttpServlet
 	    request.setAttribute("puedeEditar", puedeEditar);
 	}
 
-	
-	
+
+
 	private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		cargarDatos(request);
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
+
+
 	private void buscar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		int id = Integer.parseInt(request.getParameter("id"));
@@ -159,8 +169,8 @@ public class PersonalServlet extends HttpServlet
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
+
+
 	private void registrar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		Personal p = obtenerDatosFormulario(request);
@@ -170,14 +180,14 @@ public class PersonalServlet extends HttpServlet
 		{
 			mensaje(request, "Personal registrado correctamente.");
 		}
-		
+
 		else {mensaje(request, "No se pudo registrar el personal.");}
-		
+
 		listar(request, response);
 	}
 
-	
-	
+
+
 	private void actualizar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		Personal p = obtenerDatosFormulario(request);
@@ -187,14 +197,14 @@ public class PersonalServlet extends HttpServlet
 		{
 			mensaje(request, "Personal actualizado correctamente.");
 		}
-		
+
 		else {mensaje(request, "No se pudo actualizar el personal.");}
-		
+
 		listar(request, response);
 	}
 
-	
-	
+
+
 	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		int id = Integer.parseInt(request.getParameter("id"));
@@ -205,13 +215,13 @@ public class PersonalServlet extends HttpServlet
 			mensaje(request, "Personal eliminado correctamente.");
 		}
 		else {mensaje(request, "No se pudo eliminar el personal.");}
-		
+
 		listar(request, response);
 	}
 
-	
-	
-	private Personal obtenerDatosFormulario(HttpServletRequest request)
+
+
+	private Personal obtenerDatosFormulario(HttpServletRequest request) throws IOException, ServletException
 	{
 		Personal p = new Personal();
 
@@ -226,6 +236,7 @@ public class PersonalServlet extends HttpServlet
 		p.setDni(request.getParameter("dni"));
 		p.setCargo(request.getParameter("cargo"));
 		p.setTipoPersonal(request.getParameter("tipoPersonal"));
+		p.setSistemaPension(request.getParameter("sistemaPension"));
 		String horaParam = request.getParameter("horaEntradaEsperada");
 		if (horaParam != null && !horaParam.trim().isEmpty()) {
 		    // Si ya viene con segundos (HH:mm:ss), úsalo tal cual; si no, agrégalos
@@ -241,7 +252,7 @@ public class PersonalServlet extends HttpServlet
 		{
 		    p.setContrasena(contrasenaParam);
 		}
-		
+
 		else if (p.getIdPersonal() > 0)
 		{
 		    Personal existente = personalDAO.buscarPorId(p.getIdPersonal());
@@ -252,11 +263,49 @@ public class PersonalServlet extends HttpServlet
 		}
 		p.setRol(request.getParameter("rol"));
 
+		// ---- Foto de perfil ----
+		Part fotoPart = request.getPart("foto");
+		if (fotoPart != null && fotoPart.getSize() > 0)
+		{
+		    String nombreArchivo = "personal_" + System.currentTimeMillis() + obtenerExtension(fotoPart);
+		    String rutaCarpeta = getServletContext().getRealPath(CARPETA_FOTOS);
+
+		    File carpeta = new File(rutaCarpeta);
+		    if (!carpeta.exists())
+		    {
+		        carpeta.mkdirs();
+		    }
+
+		    fotoPart.write(rutaCarpeta + File.separator + nombreArchivo);
+		    p.setFotoPerfil(nombreArchivo);
+		}
+		else if (p.getIdPersonal() > 0)
+		{
+		    // No subió foto nueva: conserva la que ya tenía
+		    Personal existente = personalDAO.buscarPorId(p.getIdPersonal());
+		    if (existente != null)
+		    {
+		        p.setFotoPerfil(existente.getFotoPerfil());
+		    }
+		}
+
 		return p;
 	}
 
-	
-	
+
+
+	private String obtenerExtension(Part filePart)
+	{
+	    String nombreOriginal = filePart.getSubmittedFileName();
+	    if (nombreOriginal != null && nombreOriginal.contains("."))
+	    {
+	        return nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
+	    }
+	    return "";
+	}
+
+
+
 	private void cambiarClave(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 	    jakarta.servlet.http.HttpSession session = request.getSession();
@@ -295,11 +344,7 @@ public class PersonalServlet extends HttpServlet
 
 	    request.getRequestDispatcher("configuracion/Configuracion.jsp").forward(request, response);
 	}
-	
-	
+
+
 	private void mensaje(HttpServletRequest request, String texto) {request.setAttribute("mensaje", texto);}
 }
-	
-	
-	
-
