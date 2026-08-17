@@ -81,7 +81,7 @@
 						</c:if>
 						<c:if test="${!puedeEditar}">
 						<p class="text-muted mb-0" style="font-size: 13px;">Solo el Administrador puede calcular planillas.</p>
-						</c:if>                        
+						</c:if>
                     </div>
                 </div>
 
@@ -159,8 +159,13 @@
                                         <th class="text-center">Dias Trabajados</th>
                                         <th class="text-center">Tardanzas</th>
                                         <th class="text-center">Faltas</th>
-                                        <th class="text-end">Descuento</th>
-                                        <th class="text-end">Total a Pagar</th>
+                                        <th class="text-end">Bruto</th>
+                                        <th class="text-end">Desc. Asistencia</th>
+                                        <th class="text-end">Desc. Pension</th>
+                                        <th class="text-end" title="Aporte a cargo de la institucion, no se descuenta al trabajador">
+                                            EsSalud <i class="bi bi-info-circle"></i>
+                                        </th>
+                                        <th class="text-end">Neto a Pagar</th>
                                         <th class="text-center">Boleta</th>
                                     </tr>
                                 </thead>
@@ -169,13 +174,28 @@
                                 <c:forEach var="d" items="${listaDetalles}">
                                     <c:if test="${d.idPlanilla == planilla.idPlanilla}">
                                         <c:set var="hayDetalles" value="true"/>
+                                        <c:set var="trabajador" value="${mapaPersonal[d.idPersonal]}"/>
                                         <tr>
-                                            <td>${mapaPersonal[d.idPersonal].nombre} ${mapaPersonal[d.idPersonal].apellido}</td>
+                                            <td>${trabajador.nombre} ${trabajador.apellido}</td>
                                             <td class="text-center">${d.diasTrabajados}</td>
                                             <td class="text-center">${d.diasTardanza}</td>
                                             <td class="text-center">${d.diasFalta}</td>
+                                            <td class="text-end">S/ <fmt:formatNumber value="${d.montoBruto}" pattern="#,##0.00"/></td>
                                             <td class="text-end">S/ <fmt:formatNumber value="${d.montoDescuento}" pattern="#,##0.00"/></td>
-                                            <td class="text-end fw-bold">S/ <fmt:formatNumber value="${d.montoTotal}" pattern="#,##0.00"/></td>
+                                            <td class="text-end">
+                                                S/ <fmt:formatNumber value="${d.montoDescuentoPension}" pattern="#,##0.00"/>
+                                                <div class="text-muted" style="font-size: 10px;">
+                                                    <c:choose>
+                                                        <c:when test="${fn:toUpperCase(trabajador.sistemaPension) == 'AFP'}">AFP (11.37%)</c:when>
+                                                        <c:otherwise>ONP (13%)</c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                            </td>
+                                            <td class="text-end text-muted">
+                                                S/ <fmt:formatNumber value="${d.montoEssalud}" pattern="#,##0.00"/>
+                                                <div style="font-size: 10px;">a cargo del colegio</div>
+                                            </td>
+                                            <td class="text-end fw-bold">S/ <fmt:formatNumber value="${d.montoNeto}" pattern="#,##0.00"/></td>
                                             <td class="text-center">
                                                 <c:if test="${fn:toUpperCase(planilla.estado) == 'PROCESADA'}">
                                                     <a href="${pageContext.request.contextPath}/ReporteServlet?accion=reporteBoleta&idDetalle=${d.idDetalle}"
@@ -192,7 +212,7 @@
                                 </c:forEach>
                                 <c:if test="${hayDetalles == 'false'}">
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-3">
+                                        <td colspan="10" class="text-center text-muted py-3">
                                             No hay detalles calculados para esta planilla.
                                         </td>
                                     </tr>
