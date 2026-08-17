@@ -20,9 +20,14 @@
         if (!btn) return;
         function actualizarIcono() {
             var esOscuro = document.body.classList.contains('dark-mode');
-            btn.classList.toggle('bi-moon', !esOscuro);
-            btn.classList.toggle('bi-sun', esOscuro);
-            btn.title = esOscuro ? 'Modo claro' : 'Modo oscuro';
+            if (btn.classList.contains('dark-toggle-pill')) {
+                btn.classList.toggle('activo', esOscuro);
+                btn.title = esOscuro ? 'Modo claro' : 'Modo oscuro';
+            } else {
+                btn.classList.toggle('bi-moon', !esOscuro);
+                btn.classList.toggle('bi-sun', esOscuro);
+                btn.title = esOscuro ? 'Modo claro' : 'Modo oscuro';
+            }
         }
         btn.addEventListener('click', function () {
             document.body.classList.toggle('dark-mode');
