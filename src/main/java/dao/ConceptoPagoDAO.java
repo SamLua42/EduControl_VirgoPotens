@@ -58,6 +58,7 @@ public class ConceptoPagoDAO implements IConceptoPagoDAO {
 				c.setTarifaDiaria(rs.getBigDecimal("tarifaDiaria"));
 				c.setDescuentoTardanza(rs.getBigDecimal("descuentoTardanza"));
 				c.setDescuentoFalta(rs.getBigDecimal("descuentoFalta"));
+				c.setFechaActualizacion(rs.getTimestamp("fechaActualizacion"));
 			}
 		}
 		
@@ -86,6 +87,7 @@ public class ConceptoPagoDAO implements IConceptoPagoDAO {
 				c.setTarifaDiaria(rs.getBigDecimal("tarifaDiaria"));
 				c.setDescuentoTardanza(rs.getBigDecimal("descuentoTardanza"));
 				c.setDescuentoFalta(rs.getBigDecimal("descuentoFalta"));
+				c.setFechaActualizacion(rs.getTimestamp("fechaActualizacion"));
 				lista.add(c);
 			}
 		}
