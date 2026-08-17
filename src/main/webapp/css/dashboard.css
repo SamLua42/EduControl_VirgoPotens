@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+.dash-header {
+    height: 64px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+.dash-header .icon-btn {
+    color: #666;
+    font-size: 18px;
+    margin-left: 18px;
+    position: relative;
+    cursor: pointer;
+}
+.dash-header .icon-btn .badge-count {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: var(--ec-vino);
+    color: #fff;
+    font-size: 10px;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--ec-dorado);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kpi-card {
+    border-radius: 14px;
+    padding: 18px 20px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.kpi-card .kpi-num { font-size: 28px; font-weight: 700; margin: 0; }
+.kpi-card .kpi-lbl { font-size: 12px; opacity: .9; margin: 0; }
+.kpi-card i { font-size: 30px; opacity: .8; }
+.kpi-vino { background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro)); }
+.kpi-azul { background: linear-gradient(135deg, var(--ec-azul), var(--ec-azul-claro)); }
+.kpi-dorado { background: linear-gradient(135deg, #d8ae55, #b5842f); }
+.kpi-vino-oscuro { background: linear-gradient(135deg, var(--ec-vino-oscuro), #2e0a1e); }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 120px; }
+.bar-chart .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-chart .bar-track { width: 100%; height: 100px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; }
+.bar-chart .bar { width: 8px; border-radius: 3px 3px 0 0; }
+
+.mini-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+.mini-row .estado-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.estado-procesada { background: #d1f7e0; color: #147a4a; }
+.estado-preliminar { background: #fdeecb; color: #a3660c; }
+
+.donut-legend span.dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; }
