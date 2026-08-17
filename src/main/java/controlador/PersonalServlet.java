@@ -27,6 +27,7 @@ public class PersonalServlet extends HttpServlet
 	private static final String ACTUALIZAR = "actualizar";
 	private static final String BUSCAR = "buscar";
 	private static final String ELIMINAR = "eliminar";
+	private static final String CAMBIAR_CLAVE = "cambiarClave";
 
 	private PersonalDAO personalDAO;
 
@@ -66,16 +67,18 @@ public class PersonalServlet extends HttpServlet
 		boolean esAdministrador = rolActual.equalsIgnoreCase("Administrador");
 		boolean esDirector = rolActual.equalsIgnoreCase("Director");
 
-		if (!esAdministrador && !esDirector)
-		{
-		    response.sendRedirect(request.getContextPath() + "/DashboardServlet");
-		    return;
-		}
-
 		String operacion = request.getParameter("accion");
 		if (operacion == null || operacion.trim().isEmpty())
 		{
 		    operacion = LISTAR;
+		}
+
+		boolean esCambiarClave = CAMBIAR_CLAVE.equals(operacion);
+
+		if (!esAdministrador && !esDirector && !esCambiarClave)
+		{
+		    response.sendRedirect(request.getContextPath() + "/DashboardServlet");
+		    return;
 		}
 
 		boolean esAccionDeEscritura = operacion.equals(REGISTRAR) || operacion.equals(ACTUALIZAR) || operacion.equals(ELIMINAR);
@@ -102,10 +105,13 @@ public class PersonalServlet extends HttpServlet
 				buscar(request, response);
 				break;
 			case ELIMINAR:
-				eliminar(request, response);
-				break;
+			    eliminar(request, response);
+			    break;
+			case CAMBIAR_CLAVE:
+			    cambiarClave(request, response);
+			    break;
 			default:
-				listar(request, response);
+			    listar(request, response);
 			}
 		}
 		
@@ -249,6 +255,46 @@ public class PersonalServlet extends HttpServlet
 		return p;
 	}
 
+	
+	
+	private void cambiarClave(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+	    jakarta.servlet.http.HttpSession session = request.getSession();
+	    Personal usuarioSesion = (Personal) session.getAttribute("usuarioLogueado");
+
+	    if (usuarioSesion == null)
+	    {
+	        response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+	        return;
+	    }
+
+	    String claveActual = request.getParameter("claveActual");
+	    String claveNueva = request.getParameter("claveNueva");
+
+	    Personal p = personalDAO.buscarPorId(usuarioSesion.getIdPersonal());
+
+	    if (p != null && p.getContrasena().equals(claveActual))
+	    {
+	        p.setContrasena(claveNueva);
+	        int resultado = personalDAO.actualizar(p);
+
+	        if (resultado > 0)
+	        {
+	            session.setAttribute("usuarioLogueado", p);
+	            request.setAttribute("mensajeConfig", "Contrasena actualizada correctamente.");
+	        }
+	        else
+	        {
+	            request.setAttribute("errorConfig", "No se pudo actualizar la contrasena.");
+	        }
+	    }
+	    else
+	    {
+	        request.setAttribute("errorConfig", "La contrasena actual no es correcta.");
+	    }
+
+	    request.getRequestDispatcher("configuracion/Configuracion.jsp").forward(request, response);
+	}
 	
 	
 	private void mensaje(HttpServletRequest request, String texto) {request.setAttribute("mensaje", texto);}
