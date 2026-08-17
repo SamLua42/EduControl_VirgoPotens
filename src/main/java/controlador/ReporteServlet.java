@@ -2,6 +2,7 @@ package controlador;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.lowagie.text.Chunk;
@@ -9,10 +10,12 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
@@ -49,6 +52,11 @@ public class ReporteServlet extends HttpServlet {
 	private static final Color NARANJA = new Color(230, 150, 30);
 	private static final Color ROJO = new Color(200, 40, 40);
 	private static final Color GRIS_CLARO = new Color(240, 240, 245);
+
+	private static final String RUTA_LOGO = "/img/Insignia2.png";
+
+	private static final String[] MESES = {"", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+			"Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
 
 	//declarando constantes de accion
 	private static final String REPORTE_ASISTENCIA = "reporteAsistencia";
@@ -106,7 +114,7 @@ public class ReporteServlet extends HttpServlet {
 		response.setContentType("application/pdf");
 		response.setHeader("Content-Disposition", "inline; filename=ReporteAsistencia.pdf");
 
-		Document documento = new Document(PageSize.A4, 36, 36, 120, 60);
+		Document documento = new Document(PageSize.A4, 36, 36, 120, 70);
 
 		try {
 			PdfWriter writer = PdfWriter.getInstance(documento, response.getOutputStream());
@@ -114,7 +122,10 @@ public class ReporteServlet extends HttpServlet {
 
 			documento.open();
 
-			agregarEncabezado(documento);
+			String numeroReporte = generarNumeroReporte("ASIS");
+			String periodo = obtenerPeriodoActual();
+
+			agregarEncabezado(documento, numeroReporte, periodo);
 			agregarTitulo(documento, "REPORTE DE ASISTENCIA", "Registro de asistencia del personal");
 
 			List<Asistencia> lista = asistenciaDAO.listar();
@@ -130,6 +141,11 @@ public class ReporteServlet extends HttpServlet {
 
 	private void agregarTarjetasResumen(Document documento, List<Asistencia> lista) throws DocumentException {
 
+		Font fuenteSeccion = new Font(Font.HELVETICA, 12, Font.BOLD, AZUL_OSCURO);
+		Paragraph seccion = new Paragraph("RESUMEN GENERAL", fuenteSeccion);
+		seccion.setSpacingAfter(8);
+		documento.add(seccion);
+
 		int total = lista.size();
 		int puntuales = 0, tardanzas = 0, faltas = 0;
 
@@ -141,7 +157,7 @@ public class ReporteServlet extends HttpServlet {
 
 		PdfPTable tarjetas = new PdfPTable(4);
 		tarjetas.setWidthPercentage(100);
-		tarjetas.setSpacingBefore(10);
+		tarjetas.setSpacingBefore(4);
 		tarjetas.setSpacingAfter(15);
 
 		tarjetas.addCell(crearTarjeta("TOTAL DE REGISTROS", String.valueOf(total), GRIS_CLARO, AZUL_OSCURO));
@@ -158,16 +174,22 @@ public class ReporteServlet extends HttpServlet {
 		celda.setPadding(12);
 		celda.setBorderColor(Color.LIGHT_GRAY);
 
+		Font fuenteIcono = new Font(Font.HELVETICA, 20, Font.BOLD, colorTexto);
 		Font fuenteEtiqueta = new Font(Font.HELVETICA, 8, Font.BOLD, Color.DARK_GRAY);
 		Font fuenteValor = new Font(Font.HELVETICA, 22, Font.BOLD, colorTexto);
 
+		Paragraph iconoP = new Paragraph("•", fuenteIcono);
+		iconoP.setAlignment(Element.ALIGN_CENTER);
+
 		Paragraph etiquetaP = new Paragraph(etiqueta, fuenteEtiqueta);
 		etiquetaP.setAlignment(Element.ALIGN_CENTER);
+		etiquetaP.setSpacingBefore(2);
 
 		Paragraph valorP = new Paragraph(valor, fuenteValor);
 		valorP.setAlignment(Element.ALIGN_CENTER);
 		valorP.setSpacingBefore(4);
 
+		celda.addElement(iconoP);
 		celda.addElement(etiquetaP);
 		celda.addElement(valorP);
 
@@ -181,12 +203,12 @@ public class ReporteServlet extends HttpServlet {
 		seccion.setSpacingAfter(8);
 		documento.add(seccion);
 
-		PdfPTable tabla = new PdfPTable(5);
+		PdfPTable tabla = new PdfPTable(6);
 		tabla.setWidthPercentage(100);
-		tabla.setWidths(new float[]{1, 3, 2, 2, 2});
+		tabla.setWidths(new float[]{0.6f, 2.6f, 1.3f, 1.5f, 1.6f, 1.4f});
 
 		Font fuenteHeader = new Font(Font.HELVETICA, 9, Font.BOLD, Color.WHITE);
-		String[] encabezados = {"N°", "PERSONAL", "FECHA", "HORA MARCADA", "ESTADO"};
+		String[] encabezados = {"N°", "PERSONAL", "FECHA", "HORA MARCADA", "CLASIFICACION", "ESTADO"};
 
 		for (String texto : encabezados) {
 			PdfPCell celda = new PdfPCell(new Phrase(texto, fuenteHeader));
@@ -207,6 +229,7 @@ public class ReporteServlet extends HttpServlet {
 			tabla.addCell(celdaSimple(nombreCompleto, fuenteFila, Element.ALIGN_LEFT));
 			tabla.addCell(celdaSimple(a.getFecha().toString(), fuenteFila, Element.ALIGN_CENTER));
 			tabla.addCell(celdaSimple(a.getHoraMarcada() != null ? a.getHoraMarcada().toString() : "-", fuenteFila, Element.ALIGN_CENTER));
+			tabla.addCell(celdaSimple(a.getClasificacion().toUpperCase(), fuenteFila, Element.ALIGN_CENTER));
 
 			Color colorEstado = a.getClasificacion().equals("Puntual") ? VERDE
 					: a.getClasificacion().equals("Tardanza") ? NARANJA : ROJO;
@@ -238,7 +261,7 @@ public class ReporteServlet extends HttpServlet {
 		response.setContentType("application/pdf");
 		response.setHeader("Content-Disposition", "inline; filename=BoletaPago.pdf");
 
-		Document documento = new Document(PageSize.A4, 36, 36, 120, 60);
+		Document documento = new Document(PageSize.A4, 36, 36, 120, 70);
 
 		try {
 			PdfWriter writer = PdfWriter.getInstance(documento, response.getOutputStream());
@@ -246,10 +269,11 @@ public class ReporteServlet extends HttpServlet {
 
 			documento.open();
 
-			agregarEncabezado(documento);
+			String periodoTexto = obtenerNombreMes(pl.getMes()) + " " + pl.getAnio();
+			String numeroReporte = "BOL-" + pl.getAnio() + "-" + String.format("%05d", detalle.getIdDetalle());
 
-			String periodo = pl.getMes() + "/" + pl.getAnio();
-			agregarTitulo(documento, "BOLETA DE PAGO", "Periodo: " + periodo);
+			agregarEncabezado(documento, numeroReporte, periodoTexto);
+			agregarTitulo(documento, "BOLETA DE PAGO", "Periodo: " + periodoTexto);
 
 			agregarDatosTrabajador(documento, p);
 			agregarDesgloseDias(documento, detalle);
@@ -393,46 +417,77 @@ public class ReporteServlet extends HttpServlet {
 	//======================================================================
 	// COMPONENTES COMPARTIDOS (usados por ambos reportes)
 	//======================================================================
-	private void agregarEncabezado(Document documento) throws DocumentException {
+	private void agregarEncabezado(Document documento, String numeroReporte, String periodo) throws DocumentException {
+
 		PdfPTable tablaEncabezado = new PdfPTable(2);
 		tablaEncabezado.setWidthPercentage(100);
-		tablaEncabezado.setWidths(new float[]{3, 1});
+		tablaEncabezado.setWidths(new float[]{3, 1.7f});
 
-		PdfPCell celdaInstitucion = new PdfPCell();
-		celdaInstitucion.setBorder(Rectangle.NO_BORDER);
+		// ---- BLOQUE IZQUIERDO: escudo + nombre institucional ----
+		PdfPTable bloqueInstitucion = new PdfPTable(2);
+		bloqueInstitucion.setWidths(new float[]{1, 4});
 
-		Font fuenteInstitucion = new Font(Font.HELVETICA, 10, Font.BOLD, AZUL_OSCURO);
-		Font fuenteVirgoPotens = new Font(Font.HELVETICA, 20, Font.BOLD, AZUL_OSCURO);
-		Font fuenteSistema = new Font(Font.HELVETICA, 13, Font.BOLD, DORADO);
-		Font fuenteSubtitulo = new Font(Font.HELVETICA, 9, Font.NORMAL, Color.GRAY);
+		PdfPCell celdaLogo = new PdfPCell();
+		celdaLogo.setBorder(Rectangle.NO_BORDER);
+		celdaLogo.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		try {
+			String rutaLogo = getServletContext().getRealPath(RUTA_LOGO);
+			if (rutaLogo != null) {
+				Image logo = Image.getInstance(rutaLogo);
+				logo.scaleToFit(58, 58);
+				celdaLogo.addElement(logo);
+			}
+		} catch (Exception e) {
+			// si la imagen no existe, el reporte se genera igual sin el logo
+		}
+		bloqueInstitucion.addCell(celdaLogo);
 
-		celdaInstitucion.addElement(new Paragraph("INSTITUCION EDUCATIVA", fuenteInstitucion));
-		celdaInstitucion.addElement(new Paragraph("VIRGO POTENS", fuenteVirgoPotens));
-		celdaInstitucion.addElement(new Paragraph("SISTEMA EDUCONTROL", fuenteSistema));
-		celdaInstitucion.addElement(new Paragraph("Gestion y Control Institucional", fuenteSubtitulo));
+		PdfPCell celdaTextoInstitucion = new PdfPCell();
+		celdaTextoInstitucion.setBorder(Rectangle.NO_BORDER);
+		celdaTextoInstitucion.setVerticalAlignment(Element.ALIGN_MIDDLE);
 
-		tablaEncabezado.addCell(celdaInstitucion);
+		Font fuenteInstitucion = new Font(Font.HELVETICA, 9, Font.BOLD, AZUL_OSCURO);
+		Font fuenteVirgoPotens = new Font(Font.HELVETICA, 19, Font.BOLD, AZUL_OSCURO);
+		Font fuenteSistema = new Font(Font.HELVETICA, 12, Font.BOLD, DORADO);
+		Font fuenteSubtitulo = new Font(Font.HELVETICA, 8.5f, Font.NORMAL, Color.GRAY);
 
-		PdfPCell celdaReporte = new PdfPCell();
-		celdaReporte.setBorder(Rectangle.NO_BORDER);
-		celdaReporte.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		celdaTextoInstitucion.addElement(new Paragraph("INSTITUCION EDUCATIVA", fuenteInstitucion));
+		celdaTextoInstitucion.addElement(new Paragraph("VIRGO POTENS", fuenteVirgoPotens));
+		celdaTextoInstitucion.addElement(new Paragraph("SISTEMA EDUCONTROL", fuenteSistema));
+		celdaTextoInstitucion.addElement(new Paragraph("Gestion y Control Institucional", fuenteSubtitulo));
+		bloqueInstitucion.addCell(celdaTextoInstitucion);
 
-		PdfPTable cajaReporte = new PdfPTable(1);
-		cajaReporte.setWidthPercentage(100);
+		PdfPCell celdaIzquierda = new PdfPCell(bloqueInstitucion);
+		celdaIzquierda.setBorder(Rectangle.NO_BORDER);
+		tablaEncabezado.addCell(celdaIzquierda);
 
-		PdfPCell caja = new PdfPCell();
-		caja.setBackgroundColor(AZUL_OSCURO);
-		caja.setPadding(8);
-		Font fuenteBlanca = new Font(Font.HELVETICA, 9, Font.BOLD, Color.WHITE);
-		Paragraph numeroReporte = new Paragraph("SISTEMA EDUCONTROL", fuenteBlanca);
-		numeroReporte.setAlignment(Element.ALIGN_CENTER);
-		caja.addElement(numeroReporte);
-		cajaReporte.addCell(caja);
+		// ---- BLOQUE DERECHO: numero de reporte + fecha + periodo ----
+		PdfPTable bloqueReporte = new PdfPTable(1);
+		bloqueReporte.setWidthPercentage(100);
 
-		celdaReporte.addElement(cajaReporte);
-		tablaEncabezado.addCell(celdaReporte);
+		PdfPCell cajaNumero = new PdfPCell();
+		cajaNumero.setBackgroundColor(AZUL_OSCURO);
+		cajaNumero.setPadding(8);
+		cajaNumero.setBorder(Rectangle.NO_BORDER);
+		Font fuenteEtiquetaNum = new Font(Font.HELVETICA, 7.5f, Font.BOLD, new Color(200, 205, 220));
+		Font fuenteValorNum = new Font(Font.HELVETICA, 12, Font.BOLD, Color.WHITE);
+		Paragraph etiquetaNum = new Paragraph("N° REPORTE", fuenteEtiquetaNum);
+		etiquetaNum.setAlignment(Element.ALIGN_RIGHT);
+		Paragraph valorNum = new Paragraph(numeroReporte, fuenteValorNum);
+		valorNum.setAlignment(Element.ALIGN_RIGHT);
+		cajaNumero.addElement(etiquetaNum);
+		cajaNumero.addElement(valorNum);
+		bloqueReporte.addCell(cajaNumero);
+
+		bloqueReporte.addCell(celdaInfoMini("Fecha de generacion:", obtenerFechaGeneracionFormateada()));
+		bloqueReporte.addCell(celdaInfoMini("Periodo:", periodo));
+
+		PdfPCell celdaDerecha = new PdfPCell(bloqueReporte);
+		celdaDerecha.setBorder(Rectangle.NO_BORDER);
+		tablaEncabezado.addCell(celdaDerecha);
 
 		documento.add(tablaEncabezado);
+		documento.add(Chunk.NEWLINE);
 
 		LineSeparator linea = new LineSeparator();
 		linea.setLineColor(AZUL_OSCURO);
@@ -441,16 +496,65 @@ public class ReporteServlet extends HttpServlet {
 		documento.add(Chunk.NEWLINE);
 	}
 
+	private PdfPCell celdaInfoMini(String etiqueta, String valor) {
+		PdfPCell celda = new PdfPCell();
+		celda.setBackgroundColor(GRIS_CLARO);
+		celda.setBorder(Rectangle.NO_BORDER);
+		celda.setPadding(6);
+		celda.setPaddingTop(4);
+
+		Font fuenteEtiqueta = new Font(Font.HELVETICA, 7.5f, Font.BOLD, Color.DARK_GRAY);
+		Font fuenteValor = new Font(Font.HELVETICA, 9, Font.NORMAL, AZUL_OSCURO);
+
+		Paragraph etiquetaP = new Paragraph(etiqueta, fuenteEtiqueta);
+		etiquetaP.setAlignment(Element.ALIGN_RIGHT);
+
+		Paragraph valorP = new Paragraph(valor, fuenteValor);
+		valorP.setAlignment(Element.ALIGN_RIGHT);
+		valorP.setSpacingBefore(1);
+
+		celda.addElement(etiquetaP);
+		celda.addElement(valorP);
+		return celda;
+	}
+
 	private void agregarTitulo(Document documento, String titulo, String subtitulo) throws DocumentException {
+
+		PdfPTable filaTitulo = new PdfPTable(3);
+		filaTitulo.setWidthPercentage(75);
+		filaTitulo.setHorizontalAlignment(Element.ALIGN_CENTER);
+		filaTitulo.setWidths(new float[]{1, 2.6f, 1});
+
+		PdfPCell lineaIzq = new PdfPCell();
+		lineaIzq.setBorder(Rectangle.NO_BORDER);
+		lineaIzq.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		LineSeparator lIzq = new LineSeparator();
+		lIzq.setLineColor(DORADO);
+		lIzq.setLineWidth(1.2f);
+		lineaIzq.addElement(new Chunk(lIzq));
+		filaTitulo.addCell(lineaIzq);
+
 		Font fuenteTitulo = new Font(Font.HELVETICA, 18, Font.BOLD, AZUL_OSCURO);
+		PdfPCell celdaTitulo = new PdfPCell(new Phrase(titulo, fuenteTitulo));
+		celdaTitulo.setBorder(Rectangle.NO_BORDER);
+		celdaTitulo.setHorizontalAlignment(Element.ALIGN_CENTER);
+		filaTitulo.addCell(celdaTitulo);
+
+		PdfPCell lineaDer = new PdfPCell();
+		lineaDer.setBorder(Rectangle.NO_BORDER);
+		lineaDer.setVerticalAlignment(Element.ALIGN_MIDDLE);
+		LineSeparator lDer = new LineSeparator();
+		lDer.setLineColor(DORADO);
+		lDer.setLineWidth(1.2f);
+		lineaDer.addElement(new Chunk(lDer));
+		filaTitulo.addCell(lineaDer);
+
+		documento.add(filaTitulo);
+
 		Font fuenteSubtitulo = new Font(Font.HELVETICA, 11, Font.NORMAL, Color.DARK_GRAY);
-
-		Paragraph tituloP = new Paragraph(titulo, fuenteTitulo);
-		tituloP.setAlignment(Element.ALIGN_CENTER);
-		documento.add(tituloP);
-
 		Paragraph subtituloP = new Paragraph(subtitulo, fuenteSubtitulo);
 		subtituloP.setAlignment(Element.ALIGN_CENTER);
+		subtituloP.setSpacingBefore(4);
 		subtituloP.setSpacingAfter(15);
 		documento.add(subtituloP);
 	}
@@ -462,17 +566,75 @@ public class ReporteServlet extends HttpServlet {
 		return celda;
 	}
 
+	//======================================================================
+	// HELPERS DE FECHA / NUMERACION
+	//======================================================================
+	private String obtenerNombreMes(int mes) {
+		if (mes < 1 || mes > 12) return "";
+		return MESES[mes];
+	}
+
+	private String obtenerPeriodoActual() {
+		LocalDate hoy = LocalDate.now();
+		return obtenerNombreMes(hoy.getMonthValue()) + " " + hoy.getYear();
+	}
+
+	private String obtenerFechaGeneracionFormateada() {
+		LocalDate hoy = LocalDate.now();
+		return hoy.getDayOfMonth() + " de " + obtenerNombreMes(hoy.getMonthValue()).toLowerCase() + " de " + hoy.getYear();
+	}
+
+	private String generarNumeroReporte(String prefijo) {
+		LocalDate hoy = LocalDate.now();
+		int secuencia = hoy.getDayOfYear();
+		return prefijo + "-" + hoy.getYear() + "-" + String.format("%05d", secuencia);
+	}
+
 	//===================== PIE DE PAGINA =====================
 	class PiePagina extends PdfPageEventHelper {
 		@Override
 		public void onEndPage(PdfWriter writer, Document document) {
 			PdfContentByte cb = writer.getDirectContent();
-			Font fuentePie = new Font(Font.HELVETICA, 8, Font.NORMAL, Color.GRAY);
 
-			Phrase pie = new Phrase("I.E. VIRGO POTENS  |  Pagina " + writer.getPageNumber(), fuentePie);
-			ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, pie,
-					(document.right() - document.left()) / 2 + document.leftMargin(),
-					document.bottom() - 20, 0);
+			float izquierda = document.left();
+			float derecha = document.right();
+			float yLinea = document.bottom() - 8;
+
+			cb.setColorStroke(new Color(220, 220, 225));
+			cb.setLineWidth(0.8f);
+			cb.moveTo(izquierda, yLinea);
+			cb.lineTo(derecha, yLinea);
+			cb.stroke();
+
+			Font fuenteNegrita = new Font(Font.HELVETICA, 8, Font.BOLD, AZUL_OSCURO);
+			Font fuenteNormal = new Font(Font.HELVETICA, 7.5f, Font.NORMAL, Color.GRAY);
+
+			float yTexto = yLinea - 12;
+			float centroX = (izquierda + derecha) / 2;
+
+			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("I.E. VIRGO POTENS", fuenteNegrita), izquierda, yTexto, 0);
+			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("Jr. Puno 1731 - Lima", fuenteNormal), izquierda, yTexto - 10, 0);
+			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, new Phrase("UGEL 03 - Lima Metropolitana", fuenteNormal), izquierda, yTexto - 20, 0);
+
+			ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, new Phrase("EduControl", fuenteNegrita), centroX, yTexto, 0);
+			ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, new Phrase("Sistema de Gestion Institucional", fuenteNormal), centroX, yTexto - 10, 0);
+			ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, new Phrase("Reporte generado automaticamente", fuenteNormal), centroX, yTexto - 20, 0);
+
+			String textoPagina = "Pagina " + writer.getPageNumber();
+			Font fuentePagina = new Font(Font.HELVETICA, 8, Font.BOLD, Color.WHITE);
+			BaseFont bf = fuentePagina.getCalculatedBaseFont(false);
+			float anchoTexto = bf.getWidthPoint(textoPagina, 8);
+			float anchoPildora = anchoTexto + 16;
+			float altoPildora = 16;
+			float xPildora = derecha - anchoPildora;
+			float yPildora = yTexto - 14;
+
+			cb.setColorFill(AZUL_OSCURO);
+			cb.roundRectangle(xPildora, yPildora, anchoPildora, altoPildora, 8);
+			cb.fill();
+
+			ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, new Phrase(textoPagina, fuentePagina),
+					xPildora + anchoPildora / 2, yPildora + 5, 0);
 		}
 	}
 }
