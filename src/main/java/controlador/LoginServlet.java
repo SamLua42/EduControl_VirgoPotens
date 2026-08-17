@@ -58,14 +58,11 @@ public class LoginServlet extends HttpServlet{
 		try
 		{
 			switch(operacion) {
-			case LOGIN:
-				login(request, response);
+			case LOGIN:login(request, response);
 			break;
-			case LOGOUT:
-				logout(request, response);
+			case LOGOUT:logout(request, response);
 			break;
-			default:
-				mostrarFormulario(request, response);
+			default:mostrarFormulario(request, response);
 			}
 		}
 		
@@ -89,9 +86,9 @@ public class LoginServlet extends HttpServlet{
 		if(personalEncontrado != null && personalEncontrado.getContrasena().equals(contrasena))
 		{
 			HttpSession session = request.getSession();
-			session.setAttribute("usuarioLogeado", personalEncontrado);
+			session.setAttribute("usuarioLogueado", personalEncontrado);
 			session.setAttribute("rol", personalEncontrado.getRol());
-			response.sendRedirect("DashboardServlet");
+			response.sendRedirect("dashboard/Dashboard.jsp");
 		}
 		else
 		{
