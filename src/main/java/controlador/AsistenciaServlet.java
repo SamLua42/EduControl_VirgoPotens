@@ -11,9 +11,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import dao.AsistenciaDAO;
-import entidad.Asistencia;
-import entidad.Personal;
+import dao.ConfiguracionInstitucionDAO;
 import dao.PersonalDAO;
+import entidad.Asistencia;
+import entidad.ConfiguracionInstitucion;
+import entidad.Personal;
 
 
 @WebServlet("/AsistenciaServlet")
@@ -30,27 +32,28 @@ public class AsistenciaServlet extends HttpServlet
 	private static final String BUSCAR = "buscar";
 
 
-	
+
 	private AsistenciaDAO asistenciaDAO;
 	private PersonalDAO personalDAO;
+	private ConfiguracionInstitucionDAO configDAO;
 
-	
-	public AsistenciaServlet(){asistenciaDAO = new AsistenciaDAO();personalDAO = new PersonalDAO();}
 
-	
-	
+	public AsistenciaServlet(){asistenciaDAO = new AsistenciaDAO();personalDAO = new PersonalDAO();configDAO = new ConfiguracionInstitucionDAO();}
+
+
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		procesar(request, response);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		procesar(request, response);
 	}
 
-	
-	
+
+
 	private void procesar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 	    request.setCharacterEncoding("UTF-8");
@@ -92,13 +95,13 @@ public class AsistenciaServlet extends HttpServlet
 				listar(request, response);
 			}
 		}
-		
+
 		catch (Exception e) {request.setAttribute("mensaje", "Error: " + e.getMessage());
 							 listar(request, response);}
 	}
 
-	
-	
+
+
 	private void cargarDatos(HttpServletRequest request)
 	{
 	    request.setAttribute("listaAsistencia", asistenciaDAO.listar());
@@ -111,16 +114,16 @@ public class AsistenciaServlet extends HttpServlet
 	    request.setAttribute("mapaPersonal", mapaPersonal);
 	}
 
-	
-	
+
+
 	private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		cargarDatos(request);
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
+
+
 	private void buscar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		int id = Integer.parseInt(request.getParameter("id"));
@@ -131,8 +134,8 @@ public class AsistenciaServlet extends HttpServlet
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
+
+
 	private void marcar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 	    jakarta.servlet.http.HttpSession session = request.getSession();
@@ -142,7 +145,7 @@ public class AsistenciaServlet extends HttpServlet
 	    {
 	        mensaje(request, "Debe iniciar sesión para marcar asistencia.");
 	        listar(request, response);
-	        
+
 	        return;
 	    }
 
@@ -164,11 +167,13 @@ public class AsistenciaServlet extends HttpServlet
 	    {
 	        mensaje(request, "Ya registraste tu asistencia el día de hoy.");
 	        listar(request, response);
-	       
+
 	        return;
 	    }
 
-	    String clasificacion = calcularClasificacion(p.getHoraEntradaEsperada(), horaActual);
+	    ConfiguracionInstitucion config = configDAO.obtener();
+	    String clasificacion = calcularClasificacion(p.getHoraEntradaEsperada(), horaActual, config.getToleranciaTardanzaMinutos());
+
 	    Asistencia a = new Asistencia();
 	    a.setIdPersonal(p.getIdPersonal());
 	    a.setFecha(fechaHoy);
@@ -183,11 +188,11 @@ public class AsistenciaServlet extends HttpServlet
 	    } else {
 	        mensaje(request, "No se pudo registrar la asistencia.");
 	    }
-	    
+
 	    listar(request, response);
 	}
 
-	private String calcularClasificacion(Time horaEsperada, Time horaMarcada)
+	private String calcularClasificacion(Time horaEsperada, Time horaMarcada, int toleranciaMinutos)
 	{
 	    java.time.LocalTime esperada = horaEsperada.toLocalTime();
 	    java.time.LocalTime marcada = horaMarcada.toLocalTime();
@@ -197,12 +202,12 @@ public class AsistenciaServlet extends HttpServlet
 
 	    long diferenciaMinutos = minutosMarcada - minutosEsperada;
 
-	    // Si llega antes o dentro de los 10 min de tolerancia, es puntual
-	    return (diferenciaMinutos <= 10) ? "PUNTUAL" : "TARDANZA";
+	    // Si llega antes o dentro de la tolerancia configurada, es puntual
+	    return (diferenciaMinutos <= toleranciaMinutos) ? "PUNTUAL" : "TARDANZA";
 	}
-	
-	
-	
+
+
+
 	private Asistencia obtenerDatosFormulario(HttpServletRequest request)
 	{
 		Asistencia a = new Asistencia();
@@ -217,8 +222,8 @@ public class AsistenciaServlet extends HttpServlet
 		return a;
 	}
 
-	
-	
+
+
 	private void mensaje(HttpServletRequest request, String texto) {
 		request.setAttribute("mensaje", texto);
 	}
