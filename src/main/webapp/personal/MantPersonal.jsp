@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -149,11 +150,11 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Tipo de Personal</label>
                                             <select class="form-select" name="tipoPersonal" required>
-                                                <option value="">Seleccione...</option>
-                                                <option value="DOCENTE" ${personal.tipoPersonal == 'DOCENTE' ? 'selected' : ''}>Docente</option>
-                                                <option value="ADMINISTRATIVO" ${personal.tipoPersonal == 'ADMINISTRATIVO' ? 'selected' : ''}>Administrativo</option>
-                                                <option value="TECNICO" ${personal.tipoPersonal == 'TECNICO' ? 'selected' : ''}>Técnico</option>
-                                            </select>
+											    <option value="">Seleccione...</option>
+											    <option value="DOCENTE" ${fn:toUpperCase(personal.tipoPersonal) == 'DOCENTE' ? 'selected' : ''}>Docente</option>
+											    <option value="ADMINISTRATIVO" ${fn:toUpperCase(personal.tipoPersonal) == 'ADMINISTRATIVO' ? 'selected' : ''}>Administrativo</option>
+											    <option value="TECNICO" ${fn:toUpperCase(personal.tipoPersonal) == 'TECNICO' ? 'selected' : ''}>Técnico</option>
+											</select>
                                         </div>
                                     </div>
 
@@ -165,12 +166,12 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Rol en el sistema</label>
-                                            <select class="form-select" name="rol" required>
-                                                <option value="">Seleccione...</option>
-                                                <option value="TRABAJADOR" ${personal.rol == 'TRABAJADOR' ? 'selected' : ''}>Trabajador</option>
-                                                <option value="ADMINISTRADOR" ${personal.rol == 'ADMINISTRADOR' ? 'selected' : ''}>Administrador</option>
-                                                <option value="DIRECTOR" ${personal.rol == 'DIRECTOR' ? 'selected' : ''}>Director</option>
-                                            </select>
+												<select class="form-select" name="rol" required>
+												    <option value="">Seleccione...</option>
+												    <option value="TRABAJADOR" ${fn:toUpperCase(personal.rol) == 'TRABAJADOR' ? 'selected' : ''}>Trabajador</option>
+												    <option value="ADMINISTRADOR" ${fn:toUpperCase(personal.rol) == 'ADMINISTRADOR' ? 'selected' : ''}>Administrador</option>
+												    <option value="DIRECTOR" ${fn:toUpperCase(personal.rol) == 'DIRECTOR' ? 'selected' : ''}>Director</option>
+												</select>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Usuario</label>
@@ -179,12 +180,17 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Contraseña</label>
-                                            <input type="password" class="form-control" name="contrasena"
-                                                   placeholder="${editar ? 'Dejar en blanco para no cambiarla' : ''}"
-                                                   ${editar ? '' : 'required'}>
-                                        </div>
+										<div class="row">
+										    <div class="col-md-6 mb-3">
+										        <label class="form-label">Contraseña</label>
+										        <input type="password" class="form-control" name="contrasena"
+										               placeholder="${editar ? 'No se puede modificar aquí' : ''}"
+										               ${editar ? 'disabled' : 'required'}>
+										        <c:if test="${editar}">
+										            <small class="text-muted">Para cambiar la contraseña, usa "Cambiar contraseña" en Configuración.</small>
+										        </c:if>
+										    </div>
+										</div>
                                     </div>
 
                                 </div>
@@ -262,6 +268,15 @@
     </script>
     </c:if>
 
+    <c:if test="${not empty error}">
+		<script>
+			Swal.fire({
+			    icon: 'error',
+			    title: 'Ocurrió un error',
+			    text: '${error}'
+			});
+		</script>
+	</c:if>
     <c:if test="${not empty mensaje}">
     <script>
     Swal.fire({
