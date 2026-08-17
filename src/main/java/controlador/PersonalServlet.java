@@ -82,8 +82,16 @@ public class PersonalServlet extends HttpServlet
 			}
 		}
 		
-		catch (Exception e) {request.setAttribute("mensaje", "Error: " + e.getMessage());
-							 listar(request, response);}
+		catch (Exception e)
+		{
+			request.setAttribute("error", "Ocurrió un error: " + e.getMessage());
+		    try
+		    {
+		        listar(request, response);
+		    }
+		    
+		    catch (Exception ex) {ex.printStackTrace();}
+		}
 	}
 
 	
@@ -180,9 +188,30 @@ public class PersonalServlet extends HttpServlet
 		p.setDni(request.getParameter("dni"));
 		p.setCargo(request.getParameter("cargo"));
 		p.setTipoPersonal(request.getParameter("tipoPersonal"));
-		p.setHoraEntradaEsperada(Time.valueOf(request.getParameter("horaEntradaEsperada") + ":00"));
+		String horaParam = request.getParameter("horaEntradaEsperada");
+		if (horaParam != null && !horaParam.trim().isEmpty()) {
+		    // Si ya viene con segundos (HH:mm:ss), úsalo tal cual; si no, agrégalos
+		    if (horaParam.length() == 5)
+		    {
+		        horaParam = horaParam + ":00";
+		    }
+		    p.setHoraEntradaEsperada(Time.valueOf(horaParam));
+		}
 		p.setUsuario(request.getParameter("usuario"));
-		p.setContrasena(request.getParameter("contrasena"));
+		String contrasenaParam = request.getParameter("contrasena");
+		if (contrasenaParam != null && !contrasenaParam.trim().isEmpty())
+		{
+		    p.setContrasena(contrasenaParam);
+		}
+		
+		else if (p.getIdPersonal() > 0)
+		{
+		    Personal existente = personalDAO.buscarPorId(p.getIdPersonal());
+		    if (existente != null)
+		    {
+		        p.setContrasena(existente.getContrasena());
+		    }
+		}
 		p.setRol(request.getParameter("rol"));
 
 		return p;
