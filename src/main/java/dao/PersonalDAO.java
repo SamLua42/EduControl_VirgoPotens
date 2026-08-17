@@ -19,7 +19,7 @@ public class PersonalDAO implements IPersonalDAO {
 	public int insertar(Personal p)
 	{
 		int resultado = 0;
-		String sql = "INSERT INTO Personal(nombre, apellido, dni, cargo, tipoPersonal, horaEntradaEsperada, usuario, contrasena, rol) VALUES(?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO Personal(nombre, apellido, dni, cargo, tipoPersonal, sistemaPension, horaEntradaEsperada, usuario, contrasena, rol) VALUES(?,?,?,?,?,?,?,?,?,?)";
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
@@ -28,15 +28,16 @@ public class PersonalDAO implements IPersonalDAO {
 			 ps.setString(3, p.getDni());
 			 ps.setString(4, p.getCargo());
 			 ps.setString(5, p.getTipoPersonal());
-			 ps.setTime(6, p.getHoraEntradaEsperada());
-			 ps.setString(7, p.getUsuario());
-			 ps.setString(8, p.getContrasena());
-			 ps.setString(9, p.getRol());
+			 ps.setString(6, p.getSistemaPension());
+			 ps.setTime(7, p.getHoraEntradaEsperada());
+			 ps.setString(8, p.getUsuario());
+			 ps.setString(9, p.getContrasena());
+			 ps.setString(10, p.getRol());
 			 resultado = ps.executeUpdate();
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
-		
+
 		return resultado;
 	}
 
@@ -62,6 +63,7 @@ public class PersonalDAO implements IPersonalDAO {
 				 p.setDni(rs.getString("dni"));
 				 p.setCargo(rs.getString("cargo"));
 				 p.setTipoPersonal(rs.getString("tipoPersonal"));
+				 p.setSistemaPension(rs.getString("sistemaPension"));
 				 p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				 p.setUsuario(rs.getString("usuario"));
 				 p.setContrasena(rs.getString("contrasena"));
@@ -77,7 +79,7 @@ public class PersonalDAO implements IPersonalDAO {
 	}
 
 
-	
+
 	@Override
 	public Personal buscarPorUsuario(String usuario)
 	{
@@ -88,7 +90,7 @@ public class PersonalDAO implements IPersonalDAO {
 		{
 			ps.setString(1,usuario);
 			ResultSet rs =ps.executeQuery();
-			
+
 			if(rs.next())
 			{
 				p = new Personal();
@@ -98,6 +100,7 @@ public class PersonalDAO implements IPersonalDAO {
 				p.setDni(rs.getString("dni"));
 				p.setCargo(rs.getString("cargo"));
 				p.setTipoPersonal(rs.getString("tipoPersonal"));
+				p.setSistemaPension(rs.getString("sistemaPension"));
 				p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				p.setUsuario(rs.getString("usuario"));
 				p.setContrasena(rs.getString("contrasena"));
@@ -106,14 +109,14 @@ public class PersonalDAO implements IPersonalDAO {
 				p.setFechaRegistro(rs.getTimestamp("fechaRegistro"));
 			}
 		}
-		
+
 		catch (SQLException e) {e.printStackTrace();}
-		
+
 		return p;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public List<Personal> listar()
 	{
@@ -133,6 +136,7 @@ public class PersonalDAO implements IPersonalDAO {
 				p.setDni(rs.getString("dni"));
 				p.setCargo(rs.getString("cargo"));
 				p.setTipoPersonal(rs.getString("tipoPersonal"));
+				p.setSistemaPension(rs.getString("sistemaPension"));
 				p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				p.setUsuario(rs.getString("usuario"));
 				p.setContrasena(rs.getString("contrasena"));
@@ -154,7 +158,7 @@ public class PersonalDAO implements IPersonalDAO {
 	public int actualizar(Personal p)
 	{
 		int resultado = 0;
-		String sql = "UPDATE Personal SET nombre=?, apellido=?, dni=?, cargo=?, tipoPersonal=?, horaEntradaEsperada=?, usuario=?, contrasena=?, rol=? WHERE IDPersonal=?";
+		String sql = "UPDATE Personal SET nombre=?, apellido=?, dni=?, cargo=?, tipoPersonal=?, sistemaPension=?, horaEntradaEsperada=?, usuario=?, contrasena=?, rol=? WHERE IDPersonal=?";
 
 		try (Connection con  = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
@@ -164,16 +168,17 @@ public class PersonalDAO implements IPersonalDAO {
 			ps.setString(3, p.getDni());
 			ps.setString(4, p.getCargo());
 			ps.setString(5, p.getTipoPersonal());
-			ps.setTime(6, p.getHoraEntradaEsperada());
-			ps.setString(7, p.getUsuario());
-			ps.setString(8, p.getContrasena());
-			ps.setString(9, p.getRol());
-			ps.setInt(10, p.getIdPersonal());
+			ps.setString(6, p.getSistemaPension());
+			ps.setTime(7, p.getHoraEntradaEsperada());
+			ps.setString(8, p.getUsuario());
+			ps.setString(9, p.getContrasena());
+			ps.setString(10, p.getRol());
+			ps.setInt(11, p.getIdPersonal());
 			resultado = ps.executeUpdate();
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
-		
+
 		return resultado;
 	}
 
@@ -193,7 +198,7 @@ public class PersonalDAO implements IPersonalDAO {
 		}
 
 		catch (SQLException e) {e.printStackTrace();}
-		
+
 		return resultado;
 	}
 
