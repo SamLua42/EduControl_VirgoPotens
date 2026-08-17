@@ -45,6 +45,8 @@
                 </div>
             </c:if>
             <form method="post" action="${pageContext.request.contextPath}/LoginServlet">
+            <form method="post" action="${pageContext.request.contextPath}/LoginServlet">
+    			<input type="hidden" name="accion" value="login">
                 <div class="mb-3">
                     <label class="form-label">Usuario</label>
                     <div class="input-group">
