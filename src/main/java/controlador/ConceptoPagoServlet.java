@@ -97,7 +97,7 @@ public class ConceptoPagoServlet extends HttpServlet
 	
 	private void cargarDatos(HttpServletRequest request)
 	{
-		request.setAttribute("listaConceptos", conceptoPagoDAO.listar());
+		request.setAttribute("listaConceptoPago", conceptoPagoDAO.listar());
 	}
 
 	
@@ -116,7 +116,7 @@ public class ConceptoPagoServlet extends HttpServlet
 		ConceptoPago c = conceptoPagoDAO.buscarPorId(id);
 
 		cargarDatos(request);
-		request.setAttribute("concepto", c);
+		request.setAttribute("conceptoPago", c);
 		request.setAttribute("editar", true);
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
