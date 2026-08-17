@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import dao.ConceptoPagoDAO;
 import entidad.ConceptoPago;
+import entidad.Personal;
 
 
 @WebServlet("/ConceptoPagoServlet")
@@ -55,11 +56,38 @@ public class ConceptoPagoServlet extends HttpServlet
 	private void procesar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		request.setCharacterEncoding("UTF-8");
+		
+		jakarta.servlet.http.HttpSession session = request.getSession();
+		Object usuarioSesion = session.getAttribute("usuarioLogueado");
+
+		if (usuarioSesion == null)
+		{
+		    response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+		    return;
+		}
+
+		entidad.Personal usuarioActual = (entidad.Personal) usuarioSesion;
+		String rolActual = usuarioActual.getRol();
+		boolean esAdministrador = rolActual.equalsIgnoreCase("Administrador");
+		boolean esDirector = rolActual.equalsIgnoreCase("Director");
+
+		if (!esAdministrador && !esDirector)
+		{
+		    response.sendRedirect(request.getContextPath() + "/DashboardServlet");
+		    return;
+		}
 
 		String operacion = request.getParameter("accion");
 		if (operacion == null || operacion.trim().isEmpty())
 		{
-			operacion = LISTAR;
+		    operacion = LISTAR;
+		}
+
+		boolean esAccionDeEscritura = operacion.equals(REGISTRAR) || operacion.equals(ACTUALIZAR) || operacion.equals(ELIMINAR);
+		if (esDirector && esAccionDeEscritura)
+		{
+		    response.sendRedirect(request.getContextPath() + "/ConceptoPagoServlet?accion=listar");
+		    return;
 		}
 
 		try
@@ -97,7 +125,11 @@ public class ConceptoPagoServlet extends HttpServlet
 	
 	private void cargarDatos(HttpServletRequest request)
 	{
-		request.setAttribute("listaConceptoPago", conceptoPagoDAO.listar());
+	    request.setAttribute("listaConceptoPago", conceptoPagoDAO.listar());
+
+	    entidad.Personal u = (entidad.Personal) request.getSession().getAttribute("usuarioLogueado");
+	    boolean puedeEditar = u != null && u.getRol().equalsIgnoreCase("Administrador");
+	    request.setAttribute("puedeEditar", puedeEditar);
 	}
 
 	

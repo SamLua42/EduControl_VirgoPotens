@@ -70,37 +70,64 @@ public class PlanillaServlet extends HttpServlet
 	
 	private void procesarPeticion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		request.setCharacterEncoding("UTF-8");
+	    request.setCharacterEncoding("UTF-8");
 
-		String operacion = request.getParameter("accion");
-		if (operacion == null || operacion.trim().isEmpty())
-		{
-			operacion = LISTAR;
-		}
+	    jakarta.servlet.http.HttpSession session = request.getSession();
+	    Object usuarioSesion = session.getAttribute("usuarioLogueado");
 
-		try
-		{
-			switch (operacion)
-			{
-			case LISTAR:
-				listar(request, response);
-				break;
-			case CALCULAR:
-				calcular(request, response);
-				break;
-			case PROCESAR:
-				procesarPlanilla(request, response);
-				break;
-			case BUSCAR:
-				buscar(request, response);
-				break;
-			default:
-				listar(request, response);
-			}
-		}
-		
-		catch (Exception e){request.setAttribute("mensaje", "Error: " + e.getMessage());
-							listar(request, response);}
+	    if (usuarioSesion == null)
+	    {
+	        response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+	        return;
+	    }
+
+	    entidad.Personal usuarioActual = (entidad.Personal) usuarioSesion;
+	    String rolActual = usuarioActual.getRol();
+	    boolean esAdministrador = rolActual.equalsIgnoreCase("Administrador");
+	    boolean esDirector = rolActual.equalsIgnoreCase("Director");
+
+	    if (!esAdministrador && !esDirector)
+	    {
+	        response.sendRedirect(request.getContextPath() + "/DashboardServlet");
+	        return;
+	    }
+
+	    String operacion = request.getParameter("accion");
+	    if (operacion == null || operacion.trim().isEmpty())
+	    {
+	        operacion = LISTAR;
+	    }
+
+	    boolean esAccionDeEscritura = operacion.equals(CALCULAR) || operacion.equals(PROCESAR);
+	    if (esDirector && esAccionDeEscritura)
+	    {
+	        response.sendRedirect(request.getContextPath() + "/PlanillaServlet?accion=listar");
+	        return;
+	    }
+
+	    try
+	    {
+	        switch (operacion)
+	        {
+	        case LISTAR:
+	            listar(request, response);
+	            break;
+	        case CALCULAR:
+	            calcular(request, response);
+	            break;
+	        case PROCESAR:
+	            procesarPlanilla(request, response);
+	            break;
+	        case BUSCAR:
+	            buscar(request, response);
+	            break;
+	        default:
+	            listar(request, response);
+	        }
+	    }
+
+	    catch (Exception e){request.setAttribute("mensaje", "Error: " + e.getMessage());
+	                        listar(request, response);}
 	}
 
 	
@@ -115,6 +142,10 @@ public class PlanillaServlet extends HttpServlet
 	        mapaPersonal.put(p.getIdPersonal(), p);
 	    }
 	    request.setAttribute("mapaPersonal", mapaPersonal);
+
+	    Personal u = (Personal) request.getSession().getAttribute("usuarioLogueado");
+	    boolean puedeEditar = u != null && u.getRol().equalsIgnoreCase("Administrador");
+	    request.setAttribute("puedeEditar", puedeEditar);
 	}
 
 	

@@ -49,11 +49,13 @@
                             <div class="col-md-6">
                                 <h5 class="mb-0"><i class="bi bi-list-ul"></i> Lista de Personal</h5>
                             </div>
-                            <div class="col-md-6 text-end">
-                                <button type="button" class="btn btn-vino" data-bs-toggle="modal" data-bs-target="#modalPersonal">
-                                    <i class="bi bi-plus-circle"></i> Nuevo Personal
-                                </button>
-                            </div>
+							<div class="col-md-6 text-end">
+							    <c:if test="${puedeEditar}">
+							    <button type="button" class="btn btn-vino" data-bs-toggle="modal" data-bs-target="#modalPersonal">
+							        <i class="bi bi-plus-circle"></i> Nuevo Personal
+							    </button>
+							    </c:if>
+							</div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -81,16 +83,21 @@
                                         <td>${p.tipoPersonal}</td>
                                         <td>${p.usuario}</td>
                                         <td>${p.rol}</td>
-                                        <td class="text-center">
-                                            <a href="${pageContext.request.contextPath}/PersonalServlet?accion=buscar&id=${p.idPersonal}"
-                                               class="btn btn-warning btn-sm" title="Editar">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <a href="${pageContext.request.contextPath}/PersonalServlet?accion=eliminar&id=${p.idPersonal}"
-                                               class="btn btn-danger btn-sm btnEliminar" title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </td>
+										<td class="text-center">
+										    <c:if test="${puedeEditar}">
+										    <a href="${pageContext.request.contextPath}/PersonalServlet?accion=buscar&id=${p.idPersonal}"
+										       class="btn btn-warning btn-sm" title="Editar">
+										        <i class="bi bi-pencil-square"></i>
+										    </a>
+										    <a href="${pageContext.request.contextPath}/PersonalServlet?accion=eliminar&id=${p.idPersonal}"
+										       class="btn btn-danger btn-sm btnEliminar" title="Eliminar">
+										        <i class="bi bi-trash"></i>
+										    </a>
+										    </c:if>
+										    <c:if test="${!puedeEditar}">
+										        <span class="text-muted" style="font-size: 11px;">Solo lectura</span>
+										    </c:if>
+										</td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>

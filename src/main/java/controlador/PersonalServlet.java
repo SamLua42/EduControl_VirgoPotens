@@ -52,10 +52,37 @@ public class PersonalServlet extends HttpServlet
 	{
 		request.setCharacterEncoding("UTF-8");
 
+		jakarta.servlet.http.HttpSession session = request.getSession();
+		Object usuarioSesion = session.getAttribute("usuarioLogueado");
+
+		if (usuarioSesion == null)
+		{
+		    response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+		    return;
+		}
+
+		entidad.Personal usuarioActual = (entidad.Personal) usuarioSesion;
+		String rolActual = usuarioActual.getRol();
+		boolean esAdministrador = rolActual.equalsIgnoreCase("Administrador");
+		boolean esDirector = rolActual.equalsIgnoreCase("Director");
+
+		if (!esAdministrador && !esDirector)
+		{
+		    response.sendRedirect(request.getContextPath() + "/DashboardServlet");
+		    return;
+		}
+
 		String operacion = request.getParameter("accion");
 		if (operacion == null || operacion.trim().isEmpty())
 		{
-			operacion = LISTAR;
+		    operacion = LISTAR;
+		}
+
+		boolean esAccionDeEscritura = operacion.equals(REGISTRAR) || operacion.equals(ACTUALIZAR) || operacion.equals(ELIMINAR);
+		if (esDirector && esAccionDeEscritura)
+		{
+		    response.sendRedirect(request.getContextPath() + "/PersonalServlet?accion=listar");
+		    return;
 		}
 
 		try
@@ -96,8 +123,13 @@ public class PersonalServlet extends HttpServlet
 
 	
 	
-	private void cargarDatos(HttpServletRequest request) {
-		request.setAttribute("listaPersonal", personalDAO.listar());
+	private void cargarDatos(HttpServletRequest request)
+	{
+	    request.setAttribute("listaPersonal", personalDAO.listar());
+
+	    Personal u = (Personal) request.getSession().getAttribute("usuarioLogueado");
+	    boolean puedeEditar = u != null && u.getRol().equalsIgnoreCase("Administrador");
+	    request.setAttribute("puedeEditar", puedeEditar);
 	}
 
 	

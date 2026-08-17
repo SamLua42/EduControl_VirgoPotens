@@ -53,12 +53,27 @@ public class AsistenciaServlet extends HttpServlet
 	
 	private void procesar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		request.setCharacterEncoding("UTF-8");
+	    request.setCharacterEncoding("UTF-8");
 
-		String operacion = request.getParameter("accion");
-		if (operacion == null || operacion.trim().isEmpty()) {
-			operacion = LISTAR;
-		}
+	    jakarta.servlet.http.HttpSession session = request.getSession();
+	    Personal usuarioSesion = (Personal) session.getAttribute("usuarioLogueado");
+
+	    if (usuarioSesion == null)
+	    {
+	        response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+	        return;
+	    }
+
+	    if (usuarioSesion.getRol().equalsIgnoreCase("Director"))
+	    {
+	        response.sendRedirect(request.getContextPath() + "/DashboardServlet");
+	        return;
+	    }
+
+	    String operacion = request.getParameter("accion");
+	    if (operacion == null || operacion.trim().isEmpty()) {
+	        operacion = LISTAR;
+	    }
 
 		try
 		{

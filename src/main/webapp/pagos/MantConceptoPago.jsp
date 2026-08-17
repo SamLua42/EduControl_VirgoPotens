@@ -51,11 +51,13 @@
                             <div class="col-md-6">
                                 <h5 class="mb-0"><i class="bi bi-list-ul"></i> Tarifas Configuradas</h5>
                             </div>
-                            <div class="col-md-6 text-end">
-                                <button type="button" class="btn btn-vino" data-bs-toggle="modal" data-bs-target="#modalConcepto">
-                                    <i class="bi bi-plus-circle"></i> Nuevo Concepto
-                                </button>
-                            </div>
+							<div class="col-md-6 text-end">
+							    <c:if test="${puedeEditar}">
+							    <button type="button" class="btn btn-vino" data-bs-toggle="modal" data-bs-target="#modalConcepto">
+							        <i class="bi bi-plus-circle"></i> Nuevo Concepto
+							    </button>
+							    </c:if>
+							</div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -93,12 +95,17 @@
                                         <td class="text-end">S/ <fmt:formatNumber value="${cp.descuentoTardanza}" pattern="#,##0.00"/></td>
                                         <td class="text-end">S/ <fmt:formatNumber value="${cp.descuentoFalta}" pattern="#,##0.00"/></td>
                                         <td><fmt:formatDate value="${cp.fechaActualizacion}" pattern="dd/MM/yyyy HH:mm"/></td>
-                                        <td class="text-center">
-                                            <a href="${pageContext.request.contextPath}/ConceptoPagoServlet?accion=buscar&id=${cp.idConcepto}"
-                                               class="btn btn-warning btn-sm" title="Editar">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                        </td>
+										<td class="text-center">
+										    <c:if test="${puedeEditar}">
+										    <a href="${pageContext.request.contextPath}/ConceptoPagoServlet?accion=buscar&id=${cp.idConcepto}"
+										       class="btn btn-warning btn-sm" title="Editar">
+										        <i class="bi bi-pencil-square"></i>
+										    </a>
+										    </c:if>
+										    <c:if test="${!puedeEditar}">
+										        <span class="text-muted" style="font-size: 11px;">Solo lectura</span>
+										    </c:if>
+										</td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>

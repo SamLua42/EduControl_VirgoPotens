@@ -48,6 +48,7 @@
                         <p class="text-muted mb-3" style="font-size: 13px;">
                             Selecciona el mes y año para calcular el pago preliminar de todo el personal, según su asistencia registrada.
                         </p>
+                        <c:if test="${puedeEditar}">
                         <form method="post" action="${pageContext.request.contextPath}/PlanillaServlet" class="row g-3 align-items-end">
                             <input type="hidden" name="accion" value="calcular">
                             <div class="col-auto">
@@ -77,6 +78,10 @@
                                 </button>
                             </div>
                         </form>
+						</c:if>
+						<c:if test="${!puedeEditar}">
+						<p class="text-muted mb-0" style="font-size: 13px;">Solo el Administrador puede calcular planillas.</p>
+						</c:if>                        
                     </div>
                 </div>
 
@@ -122,12 +127,12 @@
                                                class="btn btn-vino btn-sm" title="Ver Detalle">
                                                 <i class="bi bi-eye-fill"></i> Ver Detalle
                                             </a>
-                                            <c:if test="${fn:toUpperCase(pl.estado) != 'PROCESADA'}">
-                                                <a href="${pageContext.request.contextPath}/PlanillaServlet?accion=procesar&id=${pl.idPlanilla}"
-                                                   class="btn btn-warning btn-sm btnProcesar" title="Procesar Planilla">
-                                                    <i class="bi bi-check-circle-fill"></i> Procesar
-                                                </a>
-                                            </c:if>
+											<c:if test="${puedeEditar && fn:toUpperCase(pl.estado) != 'PROCESADA'}">
+											    <a href="${pageContext.request.contextPath}/PlanillaServlet?accion=procesar&id=${pl.idPlanilla}"
+											       class="btn btn-warning btn-sm btnProcesar" title="Procesar Planilla">
+											        <i class="bi bi-check-circle-fill"></i> Procesar
+											    </a>
+											</c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
