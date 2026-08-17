@@ -253,7 +253,7 @@ public class ReporteServlet extends HttpServlet {
 
 			agregarDatosTrabajador(documento, p);
 			agregarDesgloseDias(documento, detalle);
-			agregarTotales(documento, detalle);
+			agregarTotales(documento, detalle, p);
 
 			documento.close();
 
@@ -336,9 +336,11 @@ public class ReporteServlet extends HttpServlet {
 		return celda;
 	}
 
-	private void agregarTotales(Document documento, DetallePlanilla detalle) throws DocumentException {
+	private void agregarTotales(Document documento, DetallePlanilla detalle, Personal p) throws DocumentException {
 		Font fuenteEtiqueta = new Font(Font.HELVETICA, 11, Font.NORMAL, Color.DARK_GRAY);
 		Font fuenteMonto = new Font(Font.HELVETICA, 11, Font.BOLD, Color.BLACK);
+		Font fuenteInformativoEtiqueta = new Font(Font.HELVETICA, 9, Font.ITALIC, Color.GRAY);
+		Font fuenteInformativoMonto = new Font(Font.HELVETICA, 9, Font.ITALIC, Color.GRAY);
 		Font fuenteTotalEtiqueta = new Font(Font.HELVETICA, 13, Font.BOLD, Color.WHITE);
 		Font fuenteTotalValor = new Font(Font.HELVETICA, 16, Font.BOLD, Color.WHITE);
 
@@ -347,17 +349,26 @@ public class ReporteServlet extends HttpServlet {
 		tabla.setHorizontalAlignment(Element.ALIGN_RIGHT);
 		tabla.setSpacingBefore(10);
 
-		BigDecimal descuento = detalle.getMontoDescuento();
-		BigDecimal total = detalle.getMontoTotal();
+		BigDecimal bruto = detalle.getMontoBruto();
+		BigDecimal descuentoAsistencia = detalle.getMontoDescuento();
+		BigDecimal descuentoPension = detalle.getMontoDescuentoPension();
+		BigDecimal essalud = detalle.getMontoEssalud();
+		BigDecimal neto = detalle.getMontoNeto();
 
-		agregarFilaTotal(tabla, "Descuentos:", "S/ " + descuento.toString(), fuenteEtiqueta, fuenteMonto);
+		boolean esAfp = p != null && "AFP".equalsIgnoreCase(p.getSistemaPension());
+		String etiquetaPension = esAfp ? "Descuento AFP (11.37%):" : "Descuento ONP (13%):";
 
-		PdfPCell etiquetaTotal = new PdfPCell(new Phrase("MONTO A PAGAR", fuenteTotalEtiqueta));
+		agregarFilaTotal(tabla, "Monto Bruto:", "S/ " + bruto.toString(), fuenteEtiqueta, fuenteMonto);
+		agregarFilaTotal(tabla, "Descuento por Tardanza/Falta:", "S/ " + descuentoAsistencia.toString(), fuenteEtiqueta, fuenteMonto);
+		agregarFilaTotal(tabla, etiquetaPension, "S/ " + descuentoPension.toString(), fuenteEtiqueta, fuenteMonto);
+		agregarFilaTotal(tabla, "EsSalud (aporte del colegio, informativo):", "S/ " + essalud.toString(), fuenteInformativoEtiqueta, fuenteInformativoMonto);
+
+		PdfPCell etiquetaTotal = new PdfPCell(new Phrase("NETO A PAGAR", fuenteTotalEtiqueta));
 		etiquetaTotal.setBackgroundColor(AZUL_OSCURO);
 		etiquetaTotal.setPadding(10);
 		tabla.addCell(etiquetaTotal);
 
-		PdfPCell valorTotal = new PdfPCell(new Phrase("S/ " + total.toString(), fuenteTotalValor));
+		PdfPCell valorTotal = new PdfPCell(new Phrase("S/ " + neto.toString(), fuenteTotalValor));
 		valorTotal.setBackgroundColor(AZUL_OSCURO);
 		valorTotal.setPadding(10);
 		valorTotal.setHorizontalAlignment(Element.ALIGN_RIGHT);
