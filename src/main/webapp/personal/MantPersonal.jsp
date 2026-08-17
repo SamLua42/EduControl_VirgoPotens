@@ -64,6 +64,7 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th class="text-center">ID</th>
+                                        <th class="text-center">Foto</th>
                                         <th>Nombre completo</th>
                                         <th>DNI</th>
                                         <th>Cargo</th>
@@ -77,6 +78,18 @@
                                 <c:forEach var="p" items="${listaPersonal}">
                                     <tr>
                                         <td class="text-center">${p.idPersonal}</td>
+                                        <td class="text-center">
+                                            <c:choose>
+                                                <c:when test="${not empty p.fotoPerfil}">
+                                                    <img src="${pageContext.request.contextPath}/img/perfiles/${p.fotoPerfil}" alt="Foto" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:36px;height:36px;background:var(--ec-vino); color:#fff; font-size:12px; font-weight:600;">
+                                                        ${fn:substring(p.nombre,0,1)}${fn:substring(p.apellido,0,1)}
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
                                         <td>${p.nombre} ${p.apellido}</td>
                                         <td>${p.dni}</td>
                                         <td>${p.cargo}</td>
@@ -121,7 +134,7 @@
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
 
-                            <form method="post" action="${pageContext.request.contextPath}/PersonalServlet">
+                            <form method="post" action="${pageContext.request.contextPath}/PersonalServlet" enctype="multipart/form-data">
                                 <c:choose>
                                     <c:when test="${editar}">
                                         <input type="hidden" name="accion" value="actualizar">
@@ -183,6 +196,27 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Usuario</label>
                                             <input type="text" class="form-control" name="usuario" value="${personal.usuario}" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Sistema de Pensión</label>
+                                            <select class="form-select" name="sistemaPension" required>
+                                                <option value="">Seleccione...</option>
+                                                <option value="AFP" ${fn:toUpperCase(personal.sistemaPension) == 'AFP' ? 'selected' : ''}>AFP</option>
+                                                <option value="ONP" ${fn:toUpperCase(personal.sistemaPension) == 'ONP' ? 'selected' : ''}>ONP</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <label class="form-label">Foto de perfil</label>
+                                            <input type="file" class="form-control" name="foto" accept="image/*">
+                                            <c:if test="${editar && not empty personal.fotoPerfil}">
+                                            <div class="mt-2 d-flex align-items-center gap-2">
+                                                <img src="${pageContext.request.contextPath}/img/perfiles/${personal.fotoPerfil}" alt="Foto actual" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--ec-dorado);">
+                                                <small class="text-muted">Foto actual. Sube una nueva solo si quieres reemplazarla.</small>
+                                            </div>
+                                            </c:if>
                                         </div>
                                     </div>
 
