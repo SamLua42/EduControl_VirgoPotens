@@ -1,6 +1,7 @@
 package controlador;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -60,6 +61,21 @@ public class ConfiguracionInstitucionServlet extends HttpServlet
         try { tolerancia = Integer.parseInt(request.getParameter("toleranciaTardanzaMinutos")); }
         catch (NumberFormatException e) { /* deja el valor por defecto si viene vacio o invalido */ }
         c.setToleranciaTardanzaMinutos(tolerancia);
+
+        BigDecimal porcentajeOnp = new BigDecimal("13.00");
+        try { porcentajeOnp = new BigDecimal(request.getParameter("porcentajeOnp")); }
+        catch (Exception e) { /* deja el valor por defecto si viene vacio o invalido */ }
+        c.setPorcentajeOnp(porcentajeOnp);
+
+        BigDecimal porcentajeAfp = new BigDecimal("11.37");
+        try { porcentajeAfp = new BigDecimal(request.getParameter("porcentajeAfp")); }
+        catch (Exception e) { /* deja el valor por defecto si viene vacio o invalido */ }
+        c.setPorcentajeAfp(porcentajeAfp);
+
+        BigDecimal porcentajeEssalud = new BigDecimal("9.00");
+        try { porcentajeEssalud = new BigDecimal(request.getParameter("porcentajeEssalud")); }
+        catch (Exception e) { /* deja el valor por defecto si viene vacio o invalido */ }
+        c.setPorcentajeEssalud(porcentajeEssalud);
 
         int resultado = configDAO.actualizar(c);
 
