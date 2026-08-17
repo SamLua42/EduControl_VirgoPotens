@@ -132,12 +132,18 @@
                                 </form>
                             </div>
 
-                            <%-- PREFERENCIAS --%>
-                            <div class="tab-pane fade" id="tab-preferencias" role="tabpanel">
-                                <p class="text-muted mb-0" style="font-size: 13px;">
-                                    Las preferencias de apariencia (modo claro/oscuro) y notificaciones estaran disponibles en una proxima actualizacion del sistema.
-                                </p>
-                            </div>
+							<%-- PREFERENCIAS --%>
+							<div class="tab-pane fade" id="tab-preferencias" role="tabpanel">
+							    <p class="mb-2" style="font-size: 13px;">
+							        <i class="bi bi-check-circle-fill" style="color:#4ade80;"></i>
+							        El modo claro/oscuro ya esta disponible. Puedes cambiarlo con el icono
+							        <i class="bi bi-moon"></i> / <i class="bi bi-sun"></i> ubicado en la parte
+							        superior derecha de cualquier pantalla del sistema.
+							    </p>
+							    <p class="text-muted mb-0" style="font-size: 13px;">
+							        Las preferencias de notificaciones estaran disponibles en una proxima actualizacion del sistema.
+							    </p>
+							</div>
 
                             <%-- ADMINISTRACION DEL SISTEMA: SOLO ADMINISTRADOR --%>
                             <c:if test="${miRol == 'ADMINISTRADOR'}">
