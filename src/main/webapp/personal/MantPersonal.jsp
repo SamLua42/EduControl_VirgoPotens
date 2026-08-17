@@ -241,9 +241,17 @@
 
     <script>
     $(document).ready(function () {
+        var parametrosUrl = new URLSearchParams(window.location.search);
+        var terminoBusqueda = parametrosUrl.get('buscar');
+
         $('#tablaPersonal').DataTable({
             responsive: true,
-            language: { url: 'https://cdn.datatables.net/plug-ins/2.3.3/i18n/es-ES.json' }
+            language: { url: 'https://cdn.datatables.net/plug-ins/2.3.3/i18n/es-ES.json' },
+            initComplete: function () {
+                if (terminoBusqueda) {
+                    this.api().search(terminoBusqueda).draw();
+                }
+            }
         });
     });
 
