@@ -1,0 +1,177 @@
+@charset "UTF-8";
+
+/* ============================================================
+   EduControl - Estilos Base
+   Paleta: Vino + Dorado + Azul Marino
+   ============================================================ */
+
+:root {
+    --ec-vino: #7a1f3d;
+    --ec-vino-oscuro: #4a1030;
+    --ec-dorado: #c9a24b;
+    --ec-azul: #16213e;
+    --ec-azul-claro: #1e2d52;
+    --ec-fondo: #f4f5f9;
+    --ec-texto: #333333;
+}
+
+body {
+    background-color: var(--ec-fondo);
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--ec-texto);
+    margin: 0;
+}
+
+/* ============ HEADER ============ */
+.header {
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.header-logo a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ec-vino-oscuro);
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.header-logo i { color: var(--ec-dorado); font-size: 22px; }
+
+.header-user { display: flex; align-items: center; font-size: 14px; }
+
+.header-user .logout {
+    color: var(--ec-vino);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 12px;
+}
+.header-user .logout:hover { color: var(--ec-vino-oscuro); }
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+    width: 230px;
+    min-height: calc(100vh - 60px);
+    background: linear-gradient(180deg, var(--ec-azul), var(--ec-vino-oscuro));
+    color: #fff;
+    padding-top: 12px;
+}
+
+.sidebar-header {
+    padding: 12px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    opacity: .7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-menu { list-style: none; padding: 0; margin: 0; }
+
+.sidebar-menu .menu-title {
+    padding: 14px 20px 6px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--ec-dorado);
+    opacity: .85;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    color: #e8e8f0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background .15s ease, border-left .15s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu li a:hover { background: rgba(255,255,255,0.08); }
+
+.sidebar-menu li a.active {
+    background: rgba(201,162,75,0.18);
+    border-left: 3px solid var(--ec-dorado);
+    color: #fff;
+    font-weight: 600;
+}
+
+.sidebar-menu li a.disabled { opacity: .4; pointer-events: none; }
+
+/* ============ CONTENIDO PRINCIPAL ============ */
+.contenido { min-height: calc(100vh - 60px - 50px); }
+
+/* ============ TARJETAS (dashboard) ============ */
+.card { border: none; border-radius: 14px; }
+
+.card-vino {
+    background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro));
+    color: #fff;
+}
+
+.card-azul {
+    background: linear-gradient(135deg, var(--ec-azul), var(--ec-azul-claro));
+    color: #fff;
+}
+
+.card-dorado {
+    background: linear-gradient(135deg, #d8ae55, #b5842f);
+    color: #fff;
+}
+
+/* ============ BOTONES ============ */
+.btn-vino {
+    background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro));
+    color: #fff;
+    border: none;
+}
+.btn-vino:hover { opacity: .92; color: #fff; }
+
+.btn-outline-dorado {
+    border: 1px solid var(--ec-dorado);
+    color: var(--ec-vino-oscuro);
+    background: #fdf8ec;
+}
+.btn-outline-dorado:hover { background: var(--ec-dorado); color: #fff; }
+
+/* ============ TABLAS ============ */
+.table thead.table-dark th {
+    background: var(--ec-azul);
+    color: #fff;
+    border: none;
+}
+
+.badge-puntual { background: #4ade80; }
+.badge-tardanza { background: var(--ec-dorado); }
+.badge-falta { background: var(--ec-vino); }
+
+/* ============ FOOTER ============ */
+.footer {
+    height: 50px;
+    background: #ffffff;
+    border-top: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+    color: #888;
+}
+
+/* ============ RESPONSIVE BÁSICO ============ */
+@media (max-width: 768px) {
+    .sidebar { width: 70px; }
+    .sidebar-menu li a span,
+    .sidebar-header span,
+    .sidebar-menu .menu-title { display: none; }
+}
