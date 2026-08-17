@@ -88,7 +88,7 @@ public class LoginServlet extends HttpServlet{
 			HttpSession session = request.getSession();
 			session.setAttribute("usuarioLogueado", personalEncontrado);
 			session.setAttribute("rol", personalEncontrado.getRol());
-			response.sendRedirect("dashboard/Dashboard.jsp");
+			response.sendRedirect("DashboardServlet");
 		}
 		else
 		{
