@@ -44,7 +44,7 @@
 
 <style>
 .ec-chat-toggle {
-    position: fixed; bottom: 24px; right: 24px; width: 58px; height: 58px;
+    position: fixed; bottom: 76px; right: 24px; width: 58px; height: 58px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro));
     color: #fff; display: flex; align-items: center; justify-content: center;
@@ -54,7 +54,7 @@
 .ec-chat-toggle:hover { transform: scale(1.08); }
 
 .ec-chat-window {
-    position: fixed; bottom: 96px; right: 24px; width: 340px; max-height: 480px;
+    position: fixed; bottom: 150px; right: 24px; width: 340px; max-height: 480px;
     background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.25);
     display: flex; flex-direction: column; overflow: hidden; z-index: 1050; font-family: inherit;
 }
