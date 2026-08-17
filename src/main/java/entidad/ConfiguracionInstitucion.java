@@ -1,5 +1,7 @@
 package entidad;
 
+import java.math.BigDecimal;
+
 public class ConfiguracionInstitucion
 {
     private int id;
@@ -13,6 +15,9 @@ public class ConfiguracionInstitucion
     private String genero;
     private String turno;
     private int toleranciaTardanzaMinutos;
+    private BigDecimal porcentajeOnp;
+    private BigDecimal porcentajeAfp;
+    private BigDecimal porcentajeEssalud;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -46,4 +51,13 @@ public class ConfiguracionInstitucion
 
     public int getToleranciaTardanzaMinutos() { return toleranciaTardanzaMinutos; }
     public void setToleranciaTardanzaMinutos(int toleranciaTardanzaMinutos) { this.toleranciaTardanzaMinutos = toleranciaTardanzaMinutos; }
+
+    public BigDecimal getPorcentajeOnp() { return porcentajeOnp; }
+    public void setPorcentajeOnp(BigDecimal porcentajeOnp) { this.porcentajeOnp = porcentajeOnp; }
+
+    public BigDecimal getPorcentajeAfp() { return porcentajeAfp; }
+    public void setPorcentajeAfp(BigDecimal porcentajeAfp) { this.porcentajeAfp = porcentajeAfp; }
+
+    public BigDecimal getPorcentajeEssalud() { return porcentajeEssalud; }
+    public void setPorcentajeEssalud(BigDecimal porcentajeEssalud) { this.porcentajeEssalud = porcentajeEssalud; }
 }
