@@ -38,10 +38,15 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <i class="bi bi-search icon-btn" title="Búsqueda (próximamente)"></i>
-                    <div class="icon-btn" title="Notificaciones (próximamente)">
+                    <c:set var="miRolHeader" value="${fn:toUpperCase(sessionScope.usuarioLogueado.rol)}"/>
+                    <c:if test="${miRolHeader == 'ADMINISTRADOR' || miRolHeader == 'DIRECTOR'}">
+                    <a href="${pageContext.request.contextPath}/NotificacionesServlet" class="icon-btn" title="Notificaciones" style="text-decoration:none;">
                         <i class="bi bi-bell"></i>
-                        <span class="badge-count">3</span>
-                    </div>
+                        <c:if test="${not empty totalNotificaciones and totalNotificaciones > 0}">
+                            <span class="badge-count">${totalNotificaciones}</span>
+                        </c:if>
+                    </a>
+                    </c:if>
                     <i class="bi bi-moon icon-btn" id="btnDarkMode" title="Modo oscuro" style="cursor:pointer;"></i>
                     <div class="d-flex align-items-center ms-3">
                         <div class="avatar-circle me-2">
@@ -59,6 +64,8 @@
             </header>
 
             <main class="p-4 contenido flex-grow-1">
+
+                <c:set var="miRol" value="${fn:toUpperCase(sessionScope.usuarioLogueado.rol)}"/>
 
                 <%-- KPIs --%>
                 <div class="row g-3 mb-4">

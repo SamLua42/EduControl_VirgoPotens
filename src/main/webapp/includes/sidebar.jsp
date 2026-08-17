@@ -70,6 +70,16 @@
             </a>
         </li>
 
+        <%-- Notificaciones: Administrador y Director --%>
+        <c:if test="${miRol == 'ADMINISTRADOR' || miRol == 'DIRECTOR'}">
+        <li>
+            <a href="${pageContext.request.contextPath}/NotificacionesServlet">
+                <i class="bi bi-bell-fill"></i>
+                <span>Notificaciones</span>
+            </a>
+        </li>
+        </c:if>
+
         <%-- Configuracion del sistema: SOLO Administrador --%>
         <c:if test="${miRol == 'ADMINISTRADOR'}">
         <li class="menu-title">SISTEMA</li>
