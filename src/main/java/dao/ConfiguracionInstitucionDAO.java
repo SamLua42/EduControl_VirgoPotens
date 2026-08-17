@@ -1,5 +1,6 @@
 package dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,6 +34,9 @@ public class ConfiguracionInstitucionDAO {
                 c.setGenero(rs.getString("genero"));
                 c.setTurno(rs.getString("turno"));
                 c.setToleranciaTardanzaMinutos(rs.getInt("toleranciaTardanzaMinutos"));
+                c.setPorcentajeOnp(rs.getBigDecimal("porcentajeOnp"));
+                c.setPorcentajeAfp(rs.getBigDecimal("porcentajeAfp"));
+                c.setPorcentajeEssalud(rs.getBigDecimal("porcentajeEssalud"));
             }
         }
         catch (SQLException e) { e.printStackTrace(); }
@@ -42,6 +46,9 @@ public class ConfiguracionInstitucionDAO {
             c = new ConfiguracionInstitucion();
             c.setId(1);
             c.setToleranciaTardanzaMinutos(10);
+            c.setPorcentajeOnp(new BigDecimal("13.00"));
+            c.setPorcentajeAfp(new BigDecimal("11.37"));
+            c.setPorcentajeEssalud(new BigDecimal("9.00"));
         }
 
         return c;
@@ -51,7 +58,7 @@ public class ConfiguracionInstitucionDAO {
     public int actualizar(ConfiguracionInstitucion c)
     {
         int resultado = 0;
-        String sql = "UPDATE ConfiguracionInstitucion SET logoRuta=?, dependencia=?, telefono=?, paginaWeb=?, forma=?, directora=?, nivelModalidad=?, genero=?, turno=?, toleranciaTardanzaMinutos=? WHERE ID=1";
+        String sql = "UPDATE ConfiguracionInstitucion SET logoRuta=?, dependencia=?, telefono=?, paginaWeb=?, forma=?, directora=?, nivelModalidad=?, genero=?, turno=?, toleranciaTardanzaMinutos=?, porcentajeOnp=?, porcentajeAfp=?, porcentajeEssalud=? WHERE ID=1";
 
         try (Connection con = ConexionBD.miConexion();
              PreparedStatement ps = con.prepareStatement(sql))
@@ -66,6 +73,9 @@ public class ConfiguracionInstitucionDAO {
             ps.setString(8, c.getGenero());
             ps.setString(9, c.getTurno());
             ps.setInt(10, c.getToleranciaTardanzaMinutos());
+            ps.setBigDecimal(11, c.getPorcentajeOnp());
+            ps.setBigDecimal(12, c.getPorcentajeAfp());
+            ps.setBigDecimal(13, c.getPorcentajeEssalud());
             resultado = ps.executeUpdate();
         }
         catch (SQLException e) { e.printStackTrace(); }
