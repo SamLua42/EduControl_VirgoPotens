@@ -26,6 +26,8 @@
         <%-- ===================== COLUMNA DERECHA: header + contenido + footer ===================== --%>
         <div class="d-flex flex-column flex-grow-1">
 
+            <c:set var="miRolHeader" value="${fn:toUpperCase(sessionScope.usuarioLogueado.rol)}"/>
+
             <header class="dash-header">
                 <div>
                     <span style="font-size: 17px; font-weight: 700; color: var(--ec-vino-oscuro);">
@@ -37,8 +39,15 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <i class="bi bi-search icon-btn" title="Búsqueda (próximamente)"></i>
-                    <c:set var="miRolHeader" value="${fn:toUpperCase(sessionScope.usuarioLogueado.rol)}"/>
+                    <c:if test="${miRolHeader == 'ADMINISTRADOR' || miRolHeader == 'DIRECTOR'}">
+                    <form action="${pageContext.request.contextPath}/PersonalServlet" method="get" id="formBusquedaRapida" class="d-flex align-items-center">
+                        <input type="hidden" name="accion" value="listar">
+                        <input type="text" name="buscar" id="inputBusquedaRapida" class="form-control form-control-sm"
+                               placeholder="Buscar personal..." autocomplete="off"
+                               style="display:none; width:160px; margin-right:8px;">
+                        <i class="bi bi-search icon-btn" id="btnBusquedaRapida" title="Buscar personal" style="cursor:pointer;"></i>
+                    </form>
+                    </c:if>
                     <c:if test="${miRolHeader == 'ADMINISTRADOR' || miRolHeader == 'DIRECTOR'}">
                     <a href="${pageContext.request.contextPath}/NotificacionesServlet" class="icon-btn" title="Notificaciones" style="text-decoration:none;">
                         <i class="bi bi-bell"></i>
@@ -267,6 +276,25 @@
     <jsp:include page="/includes/chatbot.jsp"/>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var btnBuscar = document.getElementById('btnBusquedaRapida');
+        var inputBuscar = document.getElementById('inputBusquedaRapida');
+        if (btnBuscar && inputBuscar) {
+            btnBuscar.addEventListener('click', function () {
+                if (inputBuscar.style.display === 'none') {
+                    inputBuscar.style.display = 'inline-block';
+                    inputBuscar.focus();
+                } else if (inputBuscar.value.trim() !== '') {
+                    document.getElementById('formBusquedaRapida').submit();
+                } else {
+                    inputBuscar.focus();
+                }
+            });
+        }
+    });
+    </script>
 
 </body>
 </html>
