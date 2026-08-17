@@ -2,7 +2,6 @@ package controlador;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,8 +43,8 @@ public class DashboardServlet extends HttpServlet
 		detalleDAO = new DetallePlanillaDAO();
 	}
 
-	
-	
+
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		procesar(request, response);
@@ -56,8 +55,8 @@ public class DashboardServlet extends HttpServlet
 		procesar(request, response);
 	}
 
-	
-	
+
+
 	private void procesar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		try
@@ -175,6 +174,13 @@ public class DashboardServlet extends HttpServlet
 			request.setAttribute("totalPagosMes", totalPagosMes);
 			request.setAttribute("estadoPlanillaActual", estadoPlanillaActual);
 
+			// ===== NOTIFICACIONES (contador para la campanita) =====
+			int totalNotificaciones = 0;
+			if (tardanzasHoy > 0) { totalNotificaciones++; }
+			if (faltasHoy > 0) { totalNotificaciones++; }
+			if (!estadoPlanillaActual.equals("PROCESADA")) { totalNotificaciones++; }
+			request.setAttribute("totalNotificaciones", totalNotificaciones);
+
 			// ===== PERSONAL RECIENTE (ultimos 5) =====
 			List<Personal> personalOrdenado = new ArrayList<>(listaPersonal);
 			personalOrdenado.sort(Comparator.comparing(Personal::getFechaRegistro,
@@ -186,7 +192,7 @@ public class DashboardServlet extends HttpServlet
 			request.setAttribute("personalReciente", personalReciente);
 
 		}
-		
+
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -195,9 +201,9 @@ public class DashboardServlet extends HttpServlet
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
-	
+
+
+
 	// Clase auxiliar para el grafico de barras de la semana
 	public static class DiaResumen
 	{
