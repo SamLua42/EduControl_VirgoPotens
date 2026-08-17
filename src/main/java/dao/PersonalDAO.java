@@ -19,7 +19,7 @@ public class PersonalDAO implements IPersonalDAO {
 	public int insertar(Personal p)
 	{
 		int resultado = 0;
-		String sql = "INSERT INTO Personal(nombre, apellido, dni, cargo, tipoPersonal, sistemaPension, horaEntradaEsperada, usuario, contrasena, rol) VALUES(?,?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO Personal(nombre, apellido, dni, cargo, tipoPersonal, sistemaPension, fotoPerfil, horaEntradaEsperada, usuario, contrasena, rol) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 		try (Connection con = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
 		{
@@ -29,10 +29,11 @@ public class PersonalDAO implements IPersonalDAO {
 			 ps.setString(4, p.getCargo());
 			 ps.setString(5, p.getTipoPersonal());
 			 ps.setString(6, p.getSistemaPension());
-			 ps.setTime(7, p.getHoraEntradaEsperada());
-			 ps.setString(8, p.getUsuario());
-			 ps.setString(9, p.getContrasena());
-			 ps.setString(10, p.getRol());
+			 ps.setString(7, p.getFotoPerfil());
+			 ps.setTime(8, p.getHoraEntradaEsperada());
+			 ps.setString(9, p.getUsuario());
+			 ps.setString(10, p.getContrasena());
+			 ps.setString(11, p.getRol());
 			 resultado = ps.executeUpdate();
 		}
 
@@ -64,6 +65,7 @@ public class PersonalDAO implements IPersonalDAO {
 				 p.setCargo(rs.getString("cargo"));
 				 p.setTipoPersonal(rs.getString("tipoPersonal"));
 				 p.setSistemaPension(rs.getString("sistemaPension"));
+				 p.setFotoPerfil(rs.getString("fotoPerfil"));
 				 p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				 p.setUsuario(rs.getString("usuario"));
 				 p.setContrasena(rs.getString("contrasena"));
@@ -101,6 +103,7 @@ public class PersonalDAO implements IPersonalDAO {
 				p.setCargo(rs.getString("cargo"));
 				p.setTipoPersonal(rs.getString("tipoPersonal"));
 				p.setSistemaPension(rs.getString("sistemaPension"));
+				p.setFotoPerfil(rs.getString("fotoPerfil"));
 				p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				p.setUsuario(rs.getString("usuario"));
 				p.setContrasena(rs.getString("contrasena"));
@@ -137,6 +140,7 @@ public class PersonalDAO implements IPersonalDAO {
 				p.setCargo(rs.getString("cargo"));
 				p.setTipoPersonal(rs.getString("tipoPersonal"));
 				p.setSistemaPension(rs.getString("sistemaPension"));
+				p.setFotoPerfil(rs.getString("fotoPerfil"));
 				p.setHoraEntradaEsperada(rs.getTime("horaEntradaEsperada"));
 				p.setUsuario(rs.getString("usuario"));
 				p.setContrasena(rs.getString("contrasena"));
@@ -158,7 +162,7 @@ public class PersonalDAO implements IPersonalDAO {
 	public int actualizar(Personal p)
 	{
 		int resultado = 0;
-		String sql = "UPDATE Personal SET nombre=?, apellido=?, dni=?, cargo=?, tipoPersonal=?, sistemaPension=?, horaEntradaEsperada=?, usuario=?, contrasena=?, rol=? WHERE IDPersonal=?";
+		String sql = "UPDATE Personal SET nombre=?, apellido=?, dni=?, cargo=?, tipoPersonal=?, sistemaPension=?, fotoPerfil=?, horaEntradaEsperada=?, usuario=?, contrasena=?, rol=? WHERE IDPersonal=?";
 
 		try (Connection con  = ConexionBD.miConexion();
 			 PreparedStatement ps = con.prepareStatement(sql))
@@ -169,11 +173,12 @@ public class PersonalDAO implements IPersonalDAO {
 			ps.setString(4, p.getCargo());
 			ps.setString(5, p.getTipoPersonal());
 			ps.setString(6, p.getSistemaPension());
-			ps.setTime(7, p.getHoraEntradaEsperada());
-			ps.setString(8, p.getUsuario());
-			ps.setString(9, p.getContrasena());
-			ps.setString(10, p.getRol());
-			ps.setInt(11, p.getIdPersonal());
+			ps.setString(7, p.getFotoPerfil());
+			ps.setTime(8, p.getHoraEntradaEsperada());
+			ps.setString(9, p.getUsuario());
+			ps.setString(10, p.getContrasena());
+			ps.setString(11, p.getRol());
+			ps.setInt(12, p.getIdPersonal());
 			resultado = ps.executeUpdate();
 		}
 
