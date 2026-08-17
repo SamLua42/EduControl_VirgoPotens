@@ -19,6 +19,9 @@ public class Personal {
 	private String rol;
 	private boolean estado;
 	private Timestamp fechaRegistro;
+	private String fotoPerfil;
+
+
 
 
 	//CONSTRUCTORES=========================================================================================================================
@@ -27,7 +30,7 @@ public class Personal {
 	}
 
 	public Personal(int idPersonal, String nombre, String apellido, String dni, String cargo, String tipoPersonal, String sistemaPension, Time horaEntradaEsperada,
-			        String usuario, String contrasena, String rol, boolean estado, Timestamp fechaRegistro )
+			        String usuario, String contrasena, String rol, boolean estado, Timestamp fechaRegistro, String fotoPerfil)
 	{
 		this.idPersonal = idPersonal;
 		this.nombre = nombre;
@@ -42,6 +45,7 @@ public class Personal {
 		this.rol = rol;
 		this.estado = estado;
 		this.fechaRegistro = fechaRegistro;
+		this.fotoPerfil = fotoPerfil;
 	}
 
 
@@ -84,5 +88,8 @@ public class Personal {
 
 	public Timestamp getFechaRegistro() {return fechaRegistro;}
 	public void setFechaRegistro(Timestamp fechaRegistro) {this.fechaRegistro = fechaRegistro;}
+	
+	public String getFotoPerfil() { return fotoPerfil; }
+	public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
 
 }
