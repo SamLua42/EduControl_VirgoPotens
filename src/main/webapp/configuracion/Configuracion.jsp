@@ -132,18 +132,18 @@
                                 </form>
                             </div>
 
-							<%-- PREFERENCIAS --%>
-							<div class="tab-pane fade" id="tab-preferencias" role="tabpanel">
-							    <p class="mb-2" style="font-size: 13px;">
-							        <i class="bi bi-check-circle-fill" style="color:#4ade80;"></i>
-							        El modo claro/oscuro ya esta disponible. Puedes cambiarlo con el icono
-							        <i class="bi bi-moon"></i> / <i class="bi bi-sun"></i> ubicado en la parte
-							        superior derecha de cualquier pantalla del sistema.
-							    </p>
-							    <p class="text-muted mb-0" style="font-size: 13px;">
-							        Las preferencias de notificaciones estaran disponibles en una proxima actualizacion del sistema.
-							    </p>
-							</div>
+                                               <%-- PREFERENCIAS --%>
+                                               <div class="tab-pane fade" id="tab-preferencias" role="tabpanel">
+                                                   <p class="mb-2" style="font-size: 13px;">
+                                                       <i class="bi bi-check-circle-fill" style="color:#4ade80;"></i>
+                                                       El modo claro/oscuro ya esta disponible. Puedes cambiarlo con el icono
+                                                       <i class="bi bi-moon"></i> / <i class="bi bi-sun"></i> ubicado en la parte
+                                                       superior derecha de cualquier pantalla del sistema.
+                                                   </p>
+                                                   <p class="text-muted mb-0" style="font-size: 13px;">
+                                                       Las preferencias de notificaciones estaran disponibles en una proxima actualizacion del sistema.
+                                                   </p>
+                                               </div>
 
                             <%-- ADMINISTRACION DEL SISTEMA: SOLO ADMINISTRADOR --%>
                             <c:if test="${miRol == 'ADMINISTRADOR'}">
@@ -211,6 +211,27 @@
                                             <small class="text-muted" style="font-size:11px;">Minutos despues de la hora esperada que aun cuentan como "Puntual".</small>
                                         </div>
                                     </div>
+
+                                    <hr class="mt-4">
+                                    <h6 class="fw-bold mb-3" style="color: var(--ec-vino);">Descuentos de ley (Planilla)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label">ONP (%)</label>
+                                            <input type="number" step="0.01" class="form-control" name="porcentajeOnp" value="${configInst.porcentajeOnp}" min="0" max="100" required>
+                                            <small class="text-muted" style="font-size:11px;">Fijo por ley: 13%.</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">AFP (%)</label>
+                                            <input type="number" step="0.01" class="form-control" name="porcentajeAfp" value="${configInst.porcentajeAfp}" min="0" max="100" required>
+                                            <small class="text-muted" style="font-size:11px;">Aporte 10% + prima de seguro (~1.37%).</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">EsSalud (%)</label>
+                                            <input type="number" step="0.01" class="form-control" name="porcentajeEssalud" value="${configInst.porcentajeEssalud}" min="0" max="100" required>
+                                            <small class="text-muted" style="font-size:11px;">Informativo, lo asume la institucion, no se descuenta al trabajador.</small>
+                                        </div>
+                                    </div>
+
                                     <button type="submit" class="btn btn-vino mt-4">
                                         <i class="bi bi-check-circle"></i> Guardar cambios
                                     </button>
