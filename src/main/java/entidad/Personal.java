@@ -4,7 +4,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 public class Personal {
-	
+
 	//ATRIBUTOS==============================================================================================================================
 	private int idPersonal;
 	private String nombre;
@@ -12,20 +12,21 @@ public class Personal {
 	private String dni;
 	private String cargo;
 	private String tipoPersonal;
+	private String sistemaPension;
 	private Time horaEntradaEsperada;
 	private String usuario;
 	private String contrasena;
 	private String rol;
 	private boolean estado;
 	private Timestamp fechaRegistro;
-	
-	
+
+
 	//CONSTRUCTORES=========================================================================================================================
 	public Personal()
 	{
 	}
-	
-	public Personal(int idPersonal, String nombre, String apellido, String dni, String cargo, String tipoPersonal, Time horaEntradaEsperada,
+
+	public Personal(int idPersonal, String nombre, String apellido, String dni, String cargo, String tipoPersonal, String sistemaPension, Time horaEntradaEsperada,
 			        String usuario, String contrasena, String rol, boolean estado, Timestamp fechaRegistro )
 	{
 		this.idPersonal = idPersonal;
@@ -34,6 +35,7 @@ public class Personal {
 		this.dni = dni;
 		this.cargo = cargo;
 		this.tipoPersonal = tipoPersonal;
+		this.sistemaPension = sistemaPension;
 		this.horaEntradaEsperada = horaEntradaEsperada;
 		this.usuario = usuario;
 		this.contrasena = contrasena;
@@ -42,7 +44,7 @@ public class Personal {
 		this.fechaRegistro = fechaRegistro;
 	}
 
-	
+
 	//GETTERS Y SETTERS======================================================================================================================
 	public int getIdPersonal() {return idPersonal;}
 	public void setIdPersonal(int idPersonal) {this.idPersonal = idPersonal;}
@@ -62,6 +64,9 @@ public class Personal {
 	public String getTipoPersonal() {return tipoPersonal;}
 	public void setTipoPersonal(String tipoPersonal) {this.tipoPersonal = tipoPersonal;}
 
+	public String getSistemaPension() {return sistemaPension;}
+	public void setSistemaPension(String sistemaPension) {this.sistemaPension = sistemaPension;}
+
 	public Time getHoraEntradaEsperada() {return horaEntradaEsperada;}
 	public void setHoraEntradaEsperada(Time horaEntradaEsperada) {this.horaEntradaEsperada = horaEntradaEsperada;}
 
@@ -79,5 +84,5 @@ public class Personal {
 
 	public Timestamp getFechaRegistro() {return fechaRegistro;}
 	public void setFechaRegistro(Timestamp fechaRegistro) {this.fechaRegistro = fechaRegistro;}
-	
+
 }
