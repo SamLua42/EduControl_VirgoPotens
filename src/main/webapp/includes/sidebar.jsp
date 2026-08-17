@@ -69,5 +69,16 @@
                 <span>Reporte Asistencia</span>
             </a>
         </li>
+
+        <%-- Configuracion del sistema: SOLO Administrador --%>
+        <c:if test="${miRol == 'ADMINISTRADOR'}">
+        <li class="menu-title">SISTEMA</li>
+        <li>
+            <a href="${pageContext.request.contextPath}/configuracion/Configuracion.jsp">
+                <i class="bi bi-gear-fill"></i>
+                <span>Configuración</span>
+            </a>
+        </li>
+        </c:if>
     </ul>
 </aside>

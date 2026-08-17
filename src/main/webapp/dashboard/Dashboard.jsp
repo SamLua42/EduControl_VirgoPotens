@@ -222,9 +222,15 @@
                         <div class="card shadow-sm">
                             <div class="card-body d-flex flex-wrap gap-4 align-items-center">
                                 <h6 class="fw-bold mb-0 me-3"><i class="bi bi-gear-fill" style="color: var(--ec-vino);"></i> Configuración rápida</h6>
-                                <span class="text-muted" style="font-size: 13px;"><i class="bi bi-person"></i> Mi perfil</span>
-                                <span class="text-muted" style="font-size: 13px;"><i class="bi bi-key"></i> Cambiar contraseña</span>
-                                <span class="text-muted" style="font-size: 13px;"><i class="bi bi-sliders"></i> Preferencias</span>
+                                <a href="${pageContext.request.contextPath}/configuracion/Configuracion.jsp#perfil" class="text-decoration-none text-muted" style="font-size: 13px;">
+                                    <i class="bi bi-person"></i> Mi perfil
+                                </a>
+                                <a href="${pageContext.request.contextPath}/configuracion/Configuracion.jsp#clave" class="text-decoration-none text-muted" style="font-size: 13px;">
+                                    <i class="bi bi-key"></i> Cambiar contraseña
+                                </a>
+                                <a href="${pageContext.request.contextPath}/configuracion/Configuracion.jsp#preferencias" class="text-decoration-none text-muted" style="font-size: 13px;">
+                                    <i class="bi bi-sliders"></i> Preferencias
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -256,8 +262,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-</html>
-
-
-
 </html>
