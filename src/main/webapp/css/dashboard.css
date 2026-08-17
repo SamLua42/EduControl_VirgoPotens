@@ -47,16 +47,44 @@
     padding: 18px 20px;
     color: #fff;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    gap: 10px;
+    min-height: 140px;
 }
-.kpi-card .kpi-num { font-size: 28px; font-weight: 700; margin: 0; }
-.kpi-card .kpi-lbl { font-size: 12px; opacity: .9; margin: 0; }
-.kpi-card i { font-size: 30px; opacity: .8; }
-.kpi-vino { background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro)); }
-.kpi-azul { background: linear-gradient(135deg, var(--ec-azul), var(--ec-azul-claro)); }
-.kpi-dorado { background: linear-gradient(135deg, #d8ae55, #b5842f); }
-.kpi-vino-oscuro { background: linear-gradient(135deg, var(--ec-vino-oscuro), #2e0a1e); }
+.kpi-card .kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+}
+.kpi-card .kpi-num { font-size: 28px; font-weight: 700; margin: 0; color: #fff; }
+.kpi-card .kpi-lbl { font-size: 12px; opacity: .9; margin: 0; color: #fff; }
+.kpi-card .kpi-link,
+.kpi-card .kpi-link:link,
+.kpi-card .kpi-link:visited {
+    font-size: 12px;
+    color: rgba(255,255,255,0.95) !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.kpi-card .kpi-link:hover {
+    color: #fff !important;
+    text-decoration: underline !important;
+}
+
+.kpi-vino { background: linear-gradient(135deg, #22a06b 0%, #16794f 55%, #0d5c3a 100%); }
+.kpi-azul { background: linear-gradient(135deg, #5b93e8 0%, #2f5fa8 55%, var(--ec-azul) 100%); }
+.kpi-dorado { background: linear-gradient(135deg, #f0b429 0%, #d8ae55 50%, #b5842f 100%); }
+.kpi-vino-oscuro { background: linear-gradient(135deg, var(--ec-vino) 0%, var(--ec-vino-oscuro) 55%, #2e0a1e 100%); }
 
 .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 120px; }
 .bar-chart .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
