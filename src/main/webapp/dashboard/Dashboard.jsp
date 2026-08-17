@@ -42,7 +42,7 @@
                         <i class="bi bi-bell"></i>
                         <span class="badge-count">3</span>
                     </div>
-                    <i class="bi bi-moon icon-btn" title="Modo oscuro (próximamente)"></i>
+                    <i class="bi bi-moon icon-btn" id="btnDarkMode" title="Modo oscuro" style="cursor:pointer;"></i>
                     <div class="d-flex align-items-center ms-3">
                         <div class="avatar-circle me-2">
                             ${fn:substring(sessionScope.usuarioLogueado.nombre, 0, 1)}${fn:substring(sessionScope.usuarioLogueado.apellido, 0, 1)}
