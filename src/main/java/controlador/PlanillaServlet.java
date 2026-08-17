@@ -2,6 +2,7 @@ package controlador;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -12,11 +13,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import dao.AsistenciaDAO;
 import dao.ConceptoPagoDAO;
+import dao.ConfiguracionInstitucionDAO;
 import dao.DetallePlanillaDAO;
 import dao.PersonalDAO;
 import dao.PlanillaDAO;
 import entidad.Asistencia;
 import entidad.ConceptoPago;
+import entidad.ConfiguracionInstitucion;
 import entidad.DetallePlanilla;
 import entidad.Personal;
 import entidad.Planilla;
@@ -42,9 +45,10 @@ public class PlanillaServlet extends HttpServlet
 	private PersonalDAO personalDAO;
 	private AsistenciaDAO asistenciaDAO;
 	private ConceptoPagoDAO conceptoPagoDAO;
+	private ConfiguracionInstitucionDAO configInstDAO;
 
 
-	
+
 	public PlanillaServlet()
 	{
 		planillaDAO = new PlanillaDAO();
@@ -52,10 +56,11 @@ public class PlanillaServlet extends HttpServlet
 		personalDAO = new PersonalDAO();
 		asistenciaDAO = new AsistenciaDAO();
 		conceptoPagoDAO = new ConceptoPagoDAO();
+		configInstDAO = new ConfiguracionInstitucionDAO();
 	}
 
-	
-	
+
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		procesarPeticion(request, response);
@@ -66,8 +71,8 @@ public class PlanillaServlet extends HttpServlet
 		procesarPeticion(request, response);
 	}
 
-	
-	
+
+
 	private void procesarPeticion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 	    request.setCharacterEncoding("UTF-8");
@@ -130,8 +135,8 @@ public class PlanillaServlet extends HttpServlet
 	                        listar(request, response);}
 	}
 
-	
-	
+
+
 	private void cargarDatos(HttpServletRequest request)
 	{
 	    request.setAttribute("listaPlanillas", planillaDAO.listar());
@@ -148,16 +153,16 @@ public class PlanillaServlet extends HttpServlet
 	    request.setAttribute("puedeEditar", puedeEditar);
 	}
 
-	
-	
+
+
 	private void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		cargarDatos(request);
 		request.getRequestDispatcher(VISTA).forward(request, response);
 	}
 
-	
-	
+
+
 	private void buscar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		int id = Integer.parseInt(request.getParameter("id"));
@@ -186,14 +191,14 @@ public class PlanillaServlet extends HttpServlet
 
 		if (resultado > 0)
 		{
-			
+
 			List<Planilla> todas = planillaDAO.listar();
 			Planilla planillaCreada = todas.get(todas.size() - 1);
 
 			generarDetallePorTrabajador(planillaCreada, mes, anio);
 			mensaje(request, "Planilla preliminar calculada correctamente.");
 		}
-		
+
 		else
 		{
 			mensaje(request, "No se pudo calcular la planilla.");
@@ -203,11 +208,16 @@ public class PlanillaServlet extends HttpServlet
 	}
 
 
-	
+
 	private void generarDetallePorTrabajador(Planilla planilla, int mes, int anio)
 	{
 		List<Personal> listaPersonal = personalDAO.listar();
 		List<Asistencia> listaAsistencia = asistenciaDAO.listar();
+
+		ConfiguracionInstitucion config = configInstDAO.obtener();
+		BigDecimal porcentajeOnp = config.getPorcentajeOnp().divide(new BigDecimal("100"));
+		BigDecimal porcentajeAfp = config.getPorcentajeAfp().divide(new BigDecimal("100"));
+		BigDecimal porcentajeEssalud = config.getPorcentajeEssalud().divide(new BigDecimal("100"));
 
 		for (Personal p : listaPersonal)
 		{
@@ -226,13 +236,13 @@ public class PlanillaServlet extends HttpServlet
 					{
 						diasTrabajados++;
 					}
-					
+
 					else if (a.getClasificacion().equals("Tardanza"))
 					{
 						diasTrabajados++;
 						diasTardanza++;
 					}
-					
+
 					else if (a.getClasificacion().equals("Falta"))
 					{
 						diasFalta++;
@@ -250,22 +260,32 @@ public class PlanillaServlet extends HttpServlet
 				BigDecimal totalDescuentos = descuentoTardanza.add(descuentoFalta);
 				BigDecimal montoTotal = montoBase.subtract(totalDescuentos);
 
+				// ===== DESCUENTOS DE LEY: AFP/ONP y EsSalud (informativo), leidos desde Configuracion =====
+				BigDecimal porcentajePension = "AFP".equalsIgnoreCase(p.getSistemaPension()) ? porcentajeAfp : porcentajeOnp;
+				BigDecimal montoDescuentoPension = montoTotal.multiply(porcentajePension).setScale(2, RoundingMode.HALF_UP);
+				BigDecimal montoEssalud = montoTotal.multiply(porcentajeEssalud).setScale(2, RoundingMode.HALF_UP);
+				BigDecimal montoNeto = montoTotal.subtract(montoDescuentoPension);
+
 				DetallePlanilla detalle = new DetallePlanilla();
 				detalle.setIdPlanilla(planilla.getIdPlanilla());
 				detalle.setIdPersonal(p.getIdPersonal());
 				detalle.setDiasTrabajados(diasTrabajados);
 				detalle.setDiasTardanza(diasTardanza);
 				detalle.setDiasFalta(diasFalta);
+				detalle.setMontoBruto(montoBase);
 				detalle.setMontoDescuento(totalDescuentos);
+				detalle.setMontoDescuentoPension(montoDescuentoPension);
+				detalle.setMontoEssalud(montoEssalud);
 				detalle.setMontoTotal(montoTotal);
+				detalle.setMontoNeto(montoNeto);
 
 				detalleDAO.insertar(detalle);
 			}
 		}
 	}
 
-	
-	
+
+
 	private ConceptoPago buscarConceptoPorTipo(String tipoPersonal)
 	{
 		List<ConceptoPago> lista = conceptoPagoDAO.listar();
@@ -275,12 +295,12 @@ public class PlanillaServlet extends HttpServlet
 				return c;
 			}
 		}
-		
+
 		return null;
 	}
 
 
-	
+
 	private void procesarPlanilla(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		int idPlanilla = Integer.parseInt(request.getParameter("id"));
@@ -295,7 +315,7 @@ public class PlanillaServlet extends HttpServlet
 		{
 			mensaje(request, "Planilla procesada correctamente.");
 		}
-		
+
 		else
 		{
 			mensaje(request, "No se pudo procesar la planilla.");
@@ -304,8 +324,8 @@ public class PlanillaServlet extends HttpServlet
 		listar(request, response);
 	}
 
-	
-	
+
+
 	private void mensaje(HttpServletRequest request, String texto)
 	{
 		request.setAttribute("mensaje", texto);
