@@ -107,7 +107,14 @@ public class PlanillaServlet extends HttpServlet
 	
 	private void cargarDatos(HttpServletRequest request)
 	{
-		request.setAttribute("listaPlanillas", planillaDAO.listar());
+	    request.setAttribute("listaPlanillas", planillaDAO.listar());
+
+	    java.util.Map<Integer, Personal> mapaPersonal = new java.util.HashMap<>();
+	    for (Personal p : personalDAO.listar())
+	    {
+	        mapaPersonal.put(p.getIdPersonal(), p);
+	    }
+	    request.setAttribute("mapaPersonal", mapaPersonal);
 	}
 
 	
