@@ -63,6 +63,8 @@ body {
     background: linear-gradient(140deg, var(--ec-vino-oscuro) 0%, var(--ec-azul) 48%);
     color: #fff;
     padding-top: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
 
