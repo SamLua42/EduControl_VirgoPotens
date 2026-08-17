@@ -3,13 +3,17 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
+</style>
+
 <aside id="sidebar" class="sidebar">
     <div style="padding: 20px 16px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 12px;">
-        <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
-            <img src="${pageContext.request.contextPath}/img/Insignia1.png" alt="Escudo I.E. Virgo Potens" style="width:70px;height:70px;object-fit:contain;">
+        <div style="display:flex; align-items:center; justify-content:center; gap:14px;">
+            <img src="${pageContext.request.contextPath}/img/Insignia1.png" alt="Escudo I.E. Virgo Potens" style="width:88px;height:88px;object-fit:contain;">
             <div style="text-align: left;">
-                <div style="color:#fff; font-size:19px; font-weight:700; line-height:1.1;">EduControl</div>
-                <div style="color:#c9a24b; font-size:10px; margin-top:3px; line-height:1.3;">I.E. VIRGO POTENS<br>VIRGEN PODEROSA</div>
+                <div style="color:#fff; font-size:23px; font-weight:700; line-height:1.1;">EduControl</div>
+                <div style="color:#c9a24b; font-size:14px; margin-top:5px; line-height:1.3; font-weight:600;">I.E. VIRGO POTENS</div>
             </div>
         </div>
     </div>
@@ -91,4 +95,15 @@
         </li>
         </c:if>
     </ul>
+
+    <%-- Tarjeta institucional (footer del sidebar) --%>
+    <div style="margin-top:auto; margin-left:6px; margin-right:6px; margin-bottom:16px; padding:18px 6px; border-radius:14px; background: linear-gradient(160deg, var(--ec-azul) 0%, var(--ec-azul-claro) 100%); text-align:center; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
+        <div style="font-family: 'Alex Brush', 'Brush Script MT', cursive; font-weight:400; color: var(--ec-dorado); font-size: 40px; line-height:1; white-space:nowrap;">Virgo Potens</div>
+        <div style="color:#e8edf7; font-size:10.5px; letter-spacing:1.2px; font-weight:600; text-transform:uppercase; margin-top:8px; line-height:1.4;">
+            Saber más para servir mejor
+        </div>
+        <div style="color:rgba(255,255,255,0.6); font-size:13px; margin-top:44px; line-height:1.35;">
+            Compañía de las Hijas de la Caridad<br>de san Vicente de Paúl
+        </div>
+    </div>
 </aside>
