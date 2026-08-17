@@ -10,7 +10,7 @@
         <div class="d-flex align-items-center">
             <i class="bi bi-mortarboard-fill ec-chat-logo"></i>
             <div class="ms-2">
-                <div class="ec-chat-title">Asistente EduControl</div>
+                <div class="ec-chat-title">EduBot</div>
                 <div class="ec-chat-subtitle"><span class="ec-dot-online"></span> En línea</div>
             </div>
         </div>
@@ -20,12 +20,15 @@
     <div id="ecChatBody" class="ec-chat-body">
         <div class="ec-msg ec-msg-bot">
             ¡Hola, ${sessionScope.usuarioLogueado.nombre != null ? sessionScope.usuarioLogueado.nombre : "bienvenido(a)"}! 👋
-            Soy el asistente de EduControl. ¿En qué te puedo ayudar hoy?
+            Soy EduBot, el asistente de EduControl. ¿En qué te puedo ayudar hoy?
         </div>
     </div>
 
     <div id="ecChatQuickReplies" class="ec-chat-quick">
-        <button class="ec-quick-btn" data-key="marcar">¿Cómo marco mi asistencia?</button>
+        <button class="ec-quick-btn" data-key="marcar">¿Cómo registro asistencia?</button>
+        <button class="ec-quick-btn" data-key="planillas">¿Dónde veo las planillas?</button>
+        <button class="ec-quick-btn" data-key="reporte">¿Cómo genero un reporte?</button>
+        <button class="ec-quick-btn" data-key="cuantos">¿Cuántas personas están registradas?</button>
         <button class="ec-quick-btn" data-key="boleta">¿Cómo veo mi boleta de pago?</button>
         <button class="ec-quick-btn" data-key="planilla">¿Cuándo se procesa la planilla?</button>
         <button class="ec-quick-btn" data-key="tardanza">¿Qué pasa si llego tarde?</button>
@@ -75,7 +78,7 @@
 .ec-msg-bot { background: #fff; border: 1px solid #eee; border-bottom-left-radius: 2px; align-self: flex-start; color: #333; }
 .ec-msg-user { background: linear-gradient(135deg, var(--ec-vino), var(--ec-vino-oscuro)); color: #fff; border-bottom-right-radius: 2px; align-self: flex-end; }
 
-.ec-chat-quick { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid #eee; background: #fff; }
+.ec-chat-quick { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid #eee; background: #fff; max-height: 110px; overflow-y: auto; }
 .ec-quick-btn {
     border: 1px solid var(--ec-dorado); color: var(--ec-vino-oscuro); background: #fdf8ec;
     border-radius: 20px; padding: 5px 10px; font-size: 11.5px; cursor: pointer; transition: all .15s ease;
@@ -92,7 +95,10 @@
 <script>
 (function () {
     const respuestas = {
-        marcar: "Para marcar tu asistencia: entra a <b>Asistencia</b> en el menú lateral y presiona <b>Marcar Asistencia</b>. El sistema registra la hora automáticamente y la clasifica como Puntual, Tardanza o Falta según tu horario.",
+        marcar: "Ve al menú <b>Asistencia</b> y selecciona <b>Marcar Asistencia</b>. El sistema registra la hora automáticamente y la clasifica como Puntual, Tardanza o Falta según tu horario.",
+        planillas: "Puedes consultar las planillas desde el menú <b>Planilla</b> en la barra lateral.",
+        reporte: "Ingresa a <b>Reportes</b> y selecciona el tipo de reporte que necesitas: Asistencia o Boleta de Pago.",
+        cuantos: "Puedes ver el total de personal registrado en el módulo <b>Personal</b>, en el menú lateral.",
         boleta: "Ve a <b>Reportes</b>, elige el mes y año, y presiona <b>Generar PDF</b>. Solo puedes ver la boleta de un mes cuya planilla ya fue <b>procesada</b> por el Administrador.",
         planilla: "La planilla se procesa una vez al mes desde el módulo <b>Planilla</b> (solo el Administrador puede hacerlo). Ahí se calculan los pagos de todo el personal según la asistencia registrada.",
         tardanza: "Si marcas tu entrada más de <b>10 minutos</b> después de tu horario esperado, el sistema lo clasifica automáticamente como <b>Tardanza</b>, y se aplica el descuento configurado para tu tipo de personal.",
@@ -102,7 +108,10 @@
     };
 
     const keywordMap = [
-        [/marcar|asisten|entrada|salida/i, "marcar"],
+        [/registr.*asisten|marcar|entrada|salida/i, "marcar"],
+        [/plan\w*.*ver|ver.*plan\w*|d[oó]nde.*plan/i, "planillas"],
+        [/genero.*reporte|generar.*reporte|c[oó]mo.*reporte/i, "reporte"],
+        [/cu[aá]nt\w+.*(personas|registrad|personal)/i, "cuantos"],
         [/boleta|recibo|pago.*ver|ver.*pago/i, "boleta"],
         [/planilla|procesa/i, "planilla"],
         [/tarde|tardanza|falta/i, "tardanza"],
