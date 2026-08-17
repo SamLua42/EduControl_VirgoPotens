@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import dao.AsistenciaDAO;
 import entidad.Asistencia;
+import entidad.Personal;
+import dao.PersonalDAO;
 
 
 @WebServlet("/AsistenciaServlet")
@@ -30,10 +32,10 @@ public class AsistenciaServlet extends HttpServlet
 
 	
 	private AsistenciaDAO asistenciaDAO;
-	
-	
+	private PersonalDAO personalDAO;
 
-	public AsistenciaServlet(){asistenciaDAO = new AsistenciaDAO();}
+	
+	public AsistenciaServlet(){asistenciaDAO = new AsistenciaDAO();personalDAO = new PersonalDAO();}
 
 	
 	
@@ -84,7 +86,14 @@ public class AsistenciaServlet extends HttpServlet
 	
 	private void cargarDatos(HttpServletRequest request)
 	{
-		request.setAttribute("listaAsistencia", asistenciaDAO.listar());
+	    request.setAttribute("listaAsistencia", asistenciaDAO.listar());
+
+	    java.util.Map<Integer, Personal> mapaPersonal = new java.util.HashMap<>();
+	    for (Personal p : personalDAO.listar())
+	    {
+	        mapaPersonal.put(p.getIdPersonal(), p);
+	    }
+	    request.setAttribute("mapaPersonal", mapaPersonal);
 	}
 
 	
@@ -111,19 +120,72 @@ public class AsistenciaServlet extends HttpServlet
 	
 	private void marcar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		Asistencia a = obtenerDatosFormulario(request);
-		int resultado = asistenciaDAO.insertar(a);
+	    jakarta.servlet.http.HttpSession session = request.getSession();
+	    Personal p = (Personal) session.getAttribute("usuarioLogueado");
 
-		if (resultado > 0)
-		{
-			mensaje(request, "Asistencia registrada correctamente.");
-		}
-		
-		else {mensaje(request, "No se pudo registrar la asistencia.");}
-		
-		listar(request, response);
+	    if (p == null)
+	    {
+	        mensaje(request, "Debe iniciar sesión para marcar asistencia.");
+	        listar(request, response);
+	        
+	        return;
+	    }
+
+	    java.sql.Date fechaHoy = new java.sql.Date(System.currentTimeMillis());
+	    java.sql.Time horaActual = new java.sql.Time(System.currentTimeMillis());
+
+	    // Verificar si ya marcó hoy (evita doble marca)
+	    boolean yaMarco = false;
+	    for (Asistencia existente : asistenciaDAO.listar())
+	    {
+	        if (existente.getIdPersonal() == p.getIdPersonal() && existente.getFecha().equals(fechaHoy))
+	        {
+	            yaMarco = true;
+	            break;
+	        }
+	    }
+
+	    if (yaMarco)
+	    {
+	        mensaje(request, "Ya registraste tu asistencia el día de hoy.");
+	        listar(request, response);
+	       
+	        return;
+	    }
+
+	    String clasificacion = calcularClasificacion(p.getHoraEntradaEsperada(), horaActual);
+	    Asistencia a = new Asistencia();
+	    a.setIdPersonal(p.getIdPersonal());
+	    a.setFecha(fechaHoy);
+	    a.setHoraMarcada(horaActual);
+	    a.setClasificacion(clasificacion);
+
+	    int resultado = asistenciaDAO.insertar(a);
+
+	    if (resultado > 0)
+	    {
+	        mensaje(request, "Asistencia registrada como: " + clasificacion + ".");
+	    } else {
+	        mensaje(request, "No se pudo registrar la asistencia.");
+	    }
+	    
+	    listar(request, response);
 	}
 
+	private String calcularClasificacion(Time horaEsperada, Time horaMarcada)
+	{
+	    java.time.LocalTime esperada = horaEsperada.toLocalTime();
+	    java.time.LocalTime marcada = horaMarcada.toLocalTime();
+
+	    long minutosEsperada = esperada.getHour() * 60L + esperada.getMinute();
+	    long minutosMarcada = marcada.getHour() * 60L + marcada.getMinute();
+
+	    long diferenciaMinutos = minutosMarcada - minutosEsperada;
+
+	    // Si llega antes o dentro de los 10 min de tolerancia, es puntual
+	    return (diferenciaMinutos <= 10) ? "PUNTUAL" : "TARDANZA";
+	}
+	
 	
 	
 	private Asistencia obtenerDatosFormulario(HttpServletRequest request)
